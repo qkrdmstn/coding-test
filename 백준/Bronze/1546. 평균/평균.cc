@@ -20,6 +20,6 @@ int main(void)
 		a[i] = (a[i] / max) * 100;
 		sum += a[i];
 	}
-	cout << sum / (float)n;
+	cout << sum / n;
 	return 0;
 }
