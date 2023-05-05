@@ -3,15 +3,14 @@ using namespace std;
 
 int main(void)
 {
-	int a[10000];
-	int n, x;
+	int n, x, a;
 	cin >> n >> x;
 
 	for (int i = 0; i < n; i++)
 	{
-		cin >> a[i];
-		if (a[i] < x)
-			cout << a[i] << " ";
+		cin >> a;
+		if (a < x)
+			cout << a << " ";
 	}
 	
 	return 0;
