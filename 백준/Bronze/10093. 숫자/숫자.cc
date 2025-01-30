@@ -6,7 +6,7 @@ int main(void)
 	ios::sync_with_stdio(0);
 	cin.tie(0);
 
-	int a, b;
+	long long a, b;
 	cin >> a >> b;
 
 	if (a == b)
@@ -14,13 +14,13 @@ int main(void)
 	else if (a > b)
 	{
 		cout << a - b - 1 << "\n";
-		for (int i = b + 1; i < a; i++)
+		for (long long i = b + 1; i < a; i++)
 			cout << i << " ";
 	}
 	else
 	{
 		cout << b - a - 1 << "\n";
-		for (int i = a + 1; i < b; i++)
+		for (long long  i = a + 1; i < b; i++)
 			cout << i << " ";
 	}
 
