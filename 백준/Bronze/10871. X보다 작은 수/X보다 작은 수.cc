@@ -1,17 +1,20 @@
-#include<iostream>
+#include <iostream>
 using namespace std;
 
 int main(void)
 {
-	int n, x, a;
-	cin >> n >> x;
+	int n, x;
+	cin.tie(0);
+	ios::sync_with_stdio(0);
 
+	cin >> n >> x;
 	for (int i = 0; i < n; i++)
 	{
-		cin >> a;
-		if (a < x)
-			cout << a << " ";
+		int num;
+		cin >> num;
+		if (num < x)
+			cout << num << " ";
 	}
-	
+
 	return 0;
 }
