@@ -1,23 +1,20 @@
-#include<iostream>
+#include <iostream>
 using namespace std;
 
-int main()
-{	
-	int N = 0;
-	cin >> N;
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
 
-	for (int i = 1; i <= N; i++)
-	{
-		for (int j = 1; j <= N - i; j++)
-		{
-			cout << " ";
-		}
+    int n;
+    cin >> n;
 
-		for (int x = 1; x <= i; x++)
-		{
-			cout << "*";
-		}
-		
-		cout << endl;
-	}
+    for(int i=0; i<n; i++)
+    {
+        for(int j=0; j<n-i-1; j++)
+            cout <<" ";
+        for(int j=0; j<=i; j++)            
+            cout << "*";
+        cout << "\n";
+    }
+    return 0;
 }
