@@ -1,65 +1,44 @@
 #include <iostream>
 #include <string>
+#include <stack>
 using namespace std;
 
-int stack[100005] = {};
-int pos = 0;
-
-void top()
-{
-	if (pos == 0)
-		cout << "-1\n";
-	else
-		cout << stack[pos - 1] << "\n";
-}
-
-void push()
-{
-	int num;
-	cin >> num;
-
-	stack[pos] = num;
-	pos++;
-}
-
-void pop()
-{
-	top();
-	pos--;
-	if (pos < 0)
-		pos = 0;
-}
-
-void  size()
-{
-	cout << pos << "\n";
-}
-
-void empty()
-{
-	if (pos == 0)
-		cout << "1\n";
-	else
-		cout << "0\n";
-}
 int main(void)
 {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+
 	int n;
 	cin >> n;
+
+	stack<int> s;
 
 	for (int i = 0; i < n; i++) {
 		string str;
 		cin >> str;
-		if (str == "push")
-			push();
-		else if (str == "pop")
-			pop();
+		if (str == "push") {
+			int num;
+			cin >> num;
+			s.push(num);
+		}
+		else if (str == "pop") {
+			if (s.empty())
+				cout << "-1\n";
+			else {
+				cout << s.top() << "\n";
+				s.pop();
+			}
+		}
 		else if (str == "size")
-			size();
+			cout << s.size() << "\n";
 		else if (str == "empty")
-			empty();
-		else if (str == "top")
-			top();
+			cout << s.empty() << "\n";
+		else if (str == "top") {
+			if (s.empty())
+				cout << "-1\n";
+			else
+				cout << s.top() << "\n";
+		}
 	}
 	return 0;
 }
