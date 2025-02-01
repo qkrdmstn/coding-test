@@ -33,4 +33,7 @@ int main(void)
 	for (int i = 1; i <= n; i++)
 		cout << NGE[i] << " ";
 	return 0;
+    
+    //스택에 순서와 수를 같이 저장하여 pop 연산이 일어날 때
+    //pop 연산을 일으키는 수를 해당 NGE 배열 인덱스에 저장하는 방식
 }
