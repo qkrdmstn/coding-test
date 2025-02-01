@@ -1,49 +1,35 @@
 #include <iostream>
 #include <stack>
-#include <vector>
+#include <string>
 using namespace std;
 
 int main(void)
 {
-
 	ios::sync_with_stdio(0);
 	cin.tie(0);
 
 	int n;
 	stack<int> s;
-	vector<int> v; //수열을 저장하는 벡터
-	vector<char> ans; //답을 저장하는 벡터
+	string ans;
+	int pushNum = 1;
 
-	//수열 저장
 	cin >> n;
 	for (int i = 0; i < n; i++) {
 		int num;
 		cin >> num;
-		v.push_back(num);
-	}
 
-	int idx = 0;
-	int i = 1;
-	bool flag = true;
-	while (idx != v.size()) {
-		while (!s.empty() && v[idx] == s.top()) { //수열의 현재 idx와 stack의 top이 같으면 pop
-			s.pop();
-			ans.push_back('-');
-			idx++;
+		while (pushNum <= num) { //수열의 현재 num이 오름차순으로 push되는 i보다 작은 동안 계속 push
+			s.push(pushNum++);
+			ans += "+\n";
 		}
-
-		if (i > n)
-			break;
-		s.push(i);
-		ans.push_back('+');
-		i++;
+		if (s.top() != num) { //stack에서 나올 수 없는 순서로 나오는 경우 수열:[6,3] pushNum[1,2,3,4,5,6...] 6에서 pop되고 다음 push num은 7인데 원하는 수는 3일 경우 말이 안됨
+			cout << "NO\n";
+			return 0;
+		}
+		s.pop();
+		ans += "-\n";
 	}
 
-	if (idx != v.size())
-		cout << "NO";
-	else {
-		for (auto c : ans)
-			cout << c << "\n";
-	}
+	cout << ans;
 	return 0;
 }
