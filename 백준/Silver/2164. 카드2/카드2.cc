@@ -15,12 +15,10 @@ int main(void)
 		q.push(i);
 	}
 
-	int i = 0;
 	while (q.size() != 1) {
-		if (i % 2 == 1)
-			q.push(q.front());
 		q.pop();
-		i++;
+		q.push(q.front());
+		q.pop();
 	}
 	cout << q.front();
 	return 0;
