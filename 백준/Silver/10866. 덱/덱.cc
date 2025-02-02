@@ -1,7 +1,55 @@
 #include <iostream>
-#include <deque>
 #include <string>
 using namespace std;
+
+const int MX = 100005;
+int dq[2 * MX + 1];
+int head = MX, tail = MX;
+
+int size()
+{
+	return tail - head;
+}
+
+bool empty()
+{
+	if (head == tail)
+		return true;
+	else
+		return false;
+}
+
+void push_front(int num)
+{
+	dq[head - 1] = num;
+	head--;
+}
+
+void push_back(int num)
+{
+	dq[tail] = num;
+	tail++;
+}
+
+void pop_front()
+{
+	head++;
+}
+
+void pop_back()
+{
+	tail--;
+}
+
+int front()
+{
+	return dq[head];
+}
+
+int back()
+{
+	return dq[tail - 1];
+}
 
 int main(void)
 {
@@ -9,9 +57,8 @@ int main(void)
 	cin.tie(0);
 
 	int n;
-	deque<int> dq;
 	cin >> n;
-	
+
 	for (int i = 1; i <= n; i++) {
 		string str;
 		cin >> str;
@@ -19,44 +66,44 @@ int main(void)
 		if (str == "push_front") {
 			int x;
 			cin >> x;
-			dq.push_front(x);
+			push_front(x);
 		}
 		else if (str == "push_back") {
 			int x;
 			cin >> x;
-			dq.push_back(x);
+			push_back(x);
 		}
 		else if (str == "pop_front") {
-			if (!dq.empty()) {
-				cout << dq.front() << "\n";
-				dq.pop_front();
+			if (!empty()) {
+				cout << front() << "\n";
+				pop_front();
 			}
 			else
 				cout << "-1\n";
 		}
 		else if (str == "pop_back") {
-			if (!dq.empty()) {
-				cout << dq.back() << "\n";
-				dq.pop_back();
+			if (!empty()) {
+				cout << back() << "\n";
+				pop_back();
 			}
 			else
 				cout << "-1\n";
 		}
 		else if (str == "size") {
-			cout << dq.size() << "\n";
+			cout << size() << "\n";
 		}
 		else if (str == "empty") {
-			cout << dq.empty() << "\n";
+			cout << empty() << "\n";
 		}
 		else if (str == "front") {
-			if (!dq.empty())
-				cout << dq.front() << "\n";
+			if (!empty())
+				cout << front() << "\n";
 			else
 				cout << "-1\n";
 		}
 		else if (str == "back") {
-			if (!dq.empty()) 
-				cout << dq.back() << "\n";
+			if (!empty())
+				cout << back() << "\n";
 			else
 				cout << "-1\n";
 		}
@@ -64,5 +111,5 @@ int main(void)
 
 	return 0;
 
-	//STL deque를 활용한 방식
+	//배열을 활용한 deque 방식
 }
