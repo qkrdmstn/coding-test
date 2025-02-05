@@ -17,18 +17,16 @@ int main(void)
 
 	cin >> str;
 	for (int i = 0; i < str.length(); i++) {
-		if (i < str.length() - 1 && str[i] == '(' && str[i + 1] == ')') {
-			ans += curStick;
+		if (i < str.length() - 1 && str[i] == '(' && str[i + 1] == ')') { //레이저일 경우
+			ans += s.size();
 			i++;
 		}
 		else if (str[i] == '(') {
 			s.push(str[i]);
-			curStick++;
 			totalStick++;
 		}
 		else if (str[i] == ')') {
 			s.pop();
-			curStick--;
 		}
 	}
 	ans += totalStick;
