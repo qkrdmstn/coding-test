@@ -16,19 +16,12 @@ int main(void)
 		string str;
 		cin >> str;
 		
-		bool valid = true;
 		stack<char> s;
 		for (auto c : str) {
-			if (s.empty())
+			if (!s.empty() && s.top() == c)
+				s.pop();
+			else
 				s.push(c);
-			else {
-				if (s.top() == 'A' && c == 'A')
-					s.pop();
-				else if (s.top() == 'B' && c == 'B')
-					s.pop();
-				else
-					s.push(c);
-			}
 		}
 		if (s.empty())
 			cnt++;
