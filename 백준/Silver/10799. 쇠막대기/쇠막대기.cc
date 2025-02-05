@@ -25,9 +25,8 @@ int main(void)
 			s.push(str[i]);
 			totalStick++;
 		}
-		else if (str[i] == ')') {
+		else if (str[i] == ')')
 			s.pop();
-		}
 	}
 	ans += totalStick;
 	cout << ans;
