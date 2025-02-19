@@ -60,7 +60,7 @@ int main(void)
 		//상근이에 대한 BFS
 		bool isEscape = false;
 		int escapeTime = 0;
-		while (!q2.empty()) {
+		while (!q2.empty() && !isEscape) {
 			auto cur = q2.front();
 			q2.pop();
 
@@ -81,8 +81,6 @@ int main(void)
 				dist2[nx][ny] = dist2[cur.first][cur.second] + 1;
 				q2.push({ nx, ny });
 			}
-			if (isEscape)
-				break;
 		}
 		if (isEscape)
 			cout << escapeTime << "\n";
