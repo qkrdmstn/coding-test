@@ -5,6 +5,7 @@ using namespace std;
 
 int t;
 int w, h;
+string map[1001];
 int dist1[1001][1001];
 int dist2[1001][1001];
 int dx[4] = { 0,1,0,-1 };
@@ -17,7 +18,6 @@ int main(void)
 
 	cin >> t;
 	while (t--) {
-		string map[1001];
 		queue<pair<int, int>> q1;
 		queue<pair<int, int>> q2;
 
