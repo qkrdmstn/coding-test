@@ -7,7 +7,6 @@ queue<int> q;
 int map[100001];
 int dist[100001];
 
-
 int main(void)
 {
 	ios::sync_with_stdio(0);
@@ -31,7 +30,6 @@ int main(void)
 			if (next < 0 || next > 100000)
 				continue;
 			int nextDist = (next == 2 * cur) ? dist[cur] : dist[cur] + 1;
-			//cout << cur << ", " << dist[cur] << ", " << next << ", " << nextDist << "\n";
 
 			if (nextDist < dist[next] ) {
 				q.push(next);
@@ -45,8 +43,7 @@ int main(void)
 			dist[next] = nextDist;
 		}
 	}
-	//for(int i=n; i<=k+1; i++)
-	//	cout << dist[i] << " ";
 	cout << dist[k];
+
 	return 0;
 }
