@@ -31,10 +31,7 @@ int main(void)
 	while (!q.empty()) {
 		int curX, curY, curBroken;
 		tie(curX, curY, curBroken) = q.front();
-		if (curX == n - 1 && curY == m - 1) {
-			cout << dist[curX][curY][curBroken];
-			return 0;
-		}
+
 		q.pop();
 
 		for (int dir = 0; dir < 4; dir++) {
@@ -42,7 +39,10 @@ int main(void)
 			int ny = curY + dy[dir];
 
 			int nextDist = dist[curX][curY][curBroken] + 1;
-
+			if (curX == n - 1 && curY == m - 1) {
+				cout << dist[curX][curY][curBroken];
+				return 0;
+			}
 			if (nx < 0 || nx >= n || ny < 0 || ny >= m)
 				continue;
 
