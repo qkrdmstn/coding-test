@@ -1,72 +1,75 @@
 #include <iostream>
+#include <string>
 #include <queue>
 #include <tuple>
-#include <string>
 using namespace std;
 
 int n, m, k;
 string map[1001];
 queue<tuple<int, int, int, int>> q;
-int dist[1001][1001][11][2]; //0: 낮, 1: 밤
+int dist[1001][1001][11][2]; //0:낮, 1:밤
 int dx[4] = { 0,0,-1,1 };
-int dy[4] = { 1,-1, 0, 0 };
+int dy[4] = { -1, 1, 0, 0 };
 
-bool IsDay(int curDist)
-{
-	if (curDist % 2 == 1)
-		return true;
-	else
-		return false;
-}
 
 int main(void)
 {
 	ios::sync_with_stdio(0);
 	cin.tie(0);
-	
+
 	cin >> n >> m >> k;
 	for (int i = 0; i < n; i++) {
 		cin >> map[i];
 	}
+
+	q.push({ 0,0, k, 0 });
 	dist[0][0][k][0] = 1;
-	q.push({ 0,0,k, 0});
 
 	while (!q.empty()) {
-		int curX, curY, curK, curDay;
-		tie(curX, curY, curK, curDay) = q.front();
+		int curX, curY, curK, curT;
+		tie(curX, curY, curK, curT) = q.front();
 		q.pop();
 
 		if (curX == n - 1 && curY == m - 1) {
-			cout << dist[curX][curY][curK][curDay];
+			cout << dist[curX][curY][curK][curT];
 			return 0;
 		}
 
-		int nDay = 1 - curDay;
+		int nt = 1 - curT;
 		for (int dir = 0; dir < 4; dir++) {
 			int nx = curX + dx[dir];
 			int ny = curY + dy[dir];
+
 			if (nx < 0 || nx >= n || ny < 0 || ny >= m)
 				continue;
+			if (map[nx][ny] == '1') { //벽인 경우
+				if (curK == 0)
+					continue;
 
-			//벽을 부수는 경우
-			if (map[nx][ny] == '1' && curDay == 0 && curK > 0 && dist[nx][ny][curK - 1][nDay] == 0) {
-				int nk = curK - 1;
-				dist[nx][ny][nk][nDay] = dist[curX][curY][curK][curDay] + 1;
-				q.push({ nx, ny, nk, nDay });
+				if (curT == 0) { //현재 낮이면
+					int nk = curK - 1;
+					if (dist[nx][ny][nk][nt] > 0)
+						continue;
+					q.push({ nx, ny, nk, nt });
+					dist[nx][ny][nk][nt] = dist[curX][curY][curK][curT] + 1;
+				}
+				else  { //밤이면 제자리에 머무르기
+					int nk = curK;
+					if (dist[curX][curY][nk][nt] > 0)
+						continue;
+					q.push({ curX, curY, nk, nt });
+					dist[curX][curY][nk][nt] = dist[curX][curY][curK][curT] + 1;
+				}
 			}
-			//벽을 못 부수는 경우
-			else if (map[nx][ny] == '1' && curDay == 1 && curK > 0 && dist[nx][ny][curK - 1][nDay] == 0) {
-				dist[curX][curY][curK][nDay] = dist[curX][curY][curK][curDay] + 1;
-				q.push({ curX, curY, curK, nDay });
-			}
-			else if (map[nx][ny] == '0' && dist[nx][ny][curK][nDay] == 0) {
-				q.push({ nx, ny, curK, nDay });
-				dist[nx][ny][curK][nDay] = dist[curX][curY][curK][curDay] + 1;
+			else {
+				int nk = curK;
+				if (dist[nx][ny][nk][nt] > 0)
+					continue;
+				q.push({ nx, ny, nk, nt });
+				dist[nx][ny][nk][nt] = dist[curX][curY][curK][curT] + 1;
 			}
 		}
-
 	}
-	cout << -1 << "\n";
-
+	cout << -1;
 	return 0;
 }
