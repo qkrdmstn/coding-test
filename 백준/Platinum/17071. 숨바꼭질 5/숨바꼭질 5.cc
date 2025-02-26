@@ -43,13 +43,15 @@ int main(void)
 			}
 
 			for (int next : {cur - 1, cur + 1, 2 * cur}) {
+				int nextTime = time + 1;
+
 				if (next < 0 || next > 500000)
 					continue;
-				if (visited[1-(time % 2)][next])
+				if (visited[nextTime % 2][next])
 					continue;
 
 				q.push(next);
-				visited[1 - (time % 2)][next] = true;
+				visited[nextTime % 2][next] = true;
 			}
 		}
 		time++;
