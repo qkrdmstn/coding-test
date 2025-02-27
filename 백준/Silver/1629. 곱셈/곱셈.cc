@@ -3,10 +3,10 @@ using namespace std;
 
 long long func1(long long a, long long b, long long m)
 {
-	if (b == 1) return a % m;
+	if (b == 0) return 1;
 
 	long long num = func1(a, b / 2, m);
-	long long num2 = num * num % m;
+	long long num2 = (num * num) % m;
 	//b=2k
 	if (b % 2 == 0)
 		return num2;
