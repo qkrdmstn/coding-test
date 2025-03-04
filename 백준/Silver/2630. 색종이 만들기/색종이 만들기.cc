@@ -19,7 +19,7 @@ bool IsOneColor(int size, int startX, int startY)
 
 void PaperCount(int size, int startX, int startY)
 {
-	if (size == 1 || IsOneColor(size, startX, startY))
+	if (IsOneColor(size, startX, startY))
 		cnt[map[startX][startY]]++;
 	else 
 	{
