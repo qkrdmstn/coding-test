@@ -23,61 +23,48 @@ bool flag(int start)
 //손에 쥐고 있는 계란 및 깨진 계란의 개수를 인자로 받는다.
 void func(int start, int cnt)
 {
-	//cout << "start: " << start << " " << cnt << "\n";
-	//cout << "B:  ";
-	//for (int i = 0; i < n; i++)
-	//	cout << isBroken[i] << " ";
-	//cout << "\n"; 
 	if (start == n || flag(start)) {
-		//cout << "!!!!\n";
 		if (cnt > ans)
 			ans = cnt;
 		return;
 	}
 	else {
 
-
-		//내리 칠 계란 순회
-		for (int i = 0; i < n; i++) {
-			//손에 쥐고 있는 계란이거나 내리칠 계란이 깨진 계란이면 continue
-			if (i == start || isBroken[i] || isBroken[start])
-				continue;
-
-			durability[start] -= weight[i];
-			if (!isBroken[start] && durability[start] <= 0) {
-				isBroken[start] = true;
-				cnt++;
-			}
-			durability[i] -= weight[start];
-			if (!isBroken[i] && durability[i] <= 0) {
-				isBroken[i] = true;
-				cnt++;
-			}
-			//cout << "B:  ";
-			//for (int i = 0; i < n; i++)
-			//	cout << isBroken[i] << " ";
-			//cout << "\n";
-			//다음 계란 들기
+		if (isBroken[start]) {
 			func(start + 1, cnt);
-
-			durability[start] += weight[i];
-			if (isBroken[start] && durability[start] > 0) {
-				isBroken[start] = false;
-				cnt--;
-			}
-			durability[i] += weight[start];
-			if (isBroken[i] && durability[i] > 0) {
-				isBroken[i] = false;
-				cnt--;
-			}
-			//cout << "AB:  ";
-			//for (int i = 0; i < n; i++)
-			//	cout << isBroken[i] << " ";
-			//cout << "\n";
 		}
+		else {
+			//내리 칠 계란 순회
+			for (int i = 0; i < n; i++) {
+				//손에 쥐고 있는 계란이거나 내리칠 계란이 깨진 계란이면 continue
+				if (i == start || isBroken[i] || isBroken[start])
+					continue;
 
-		if (isBroken[start])
-			func(start + 1, cnt);
+				durability[start] -= weight[i];
+				if (!isBroken[start] && durability[start] <= 0) {
+					isBroken[start] = true;
+					cnt++;
+				}
+				durability[i] -= weight[start];
+				if (!isBroken[i] && durability[i] <= 0) {
+					isBroken[i] = true;
+					cnt++;
+				}
+				//다음 계란 들기
+				func(start + 1, cnt);
+
+				durability[start] += weight[i];
+				if (isBroken[start] && durability[start] > 0) {
+					isBroken[start] = false;
+					cnt--;
+				}
+				durability[i] += weight[start];
+				if (isBroken[i] && durability[i] > 0) {
+					isBroken[i] = false;
+					cnt--;
+				}
+			}
+		}
 	}
 }
 
