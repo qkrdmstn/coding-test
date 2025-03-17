@@ -8,6 +8,17 @@ int weightSum, t;
 queue<int> truck;
 deque<int> bridge;
 
+//다리가 비어있는지 확인
+bool IsEmpty()
+{
+	for (int i = 0; i < w; i++) {
+		if (bridge[i] != 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
 int main(void)
 {
 	cin.tie(0);
@@ -32,7 +43,6 @@ int main(void)
 		//무게 초과 시, 0 채우기
 		if (truck.empty() || weightSum + truck.front() > l) {
 			bridge.push_back(0);
-
 		}
 		//트럭 진입
 		else {
@@ -40,18 +50,8 @@ int main(void)
 			bridge.push_back(truck.front());
 			truck.pop();
 		}
-		
-		bool isEnd = true;
-		//다리가 비어있다면 End
-		for (int i = 0; i < w; i++) {
-			if (bridge[i] != 0) {
-				isEnd = false;
-				break;
-			}
-		}
 		t++;
-
-		if (isEnd)
+		if (IsEmpty())
 			break;
 	}
 
