@@ -1,46 +1,48 @@
 #include <iostream>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
-int N;
-int operands[11]; // 수열 
-int operators[4]; // 연산자의 개수
-int mymin = 1000000001;
-int mymax = -1000000001;
-void getanswer(int result, int idx)
+int n;
+int num[11];
+int minAns = 1e9;
+int maxAns = -1e9;
+
+int main(void)
 {
-    if(idx == N)
-    {
-        if(result > mymax)
-            mymax = result;
-        if(result < mymin)
-            mymin = result;
-        return;
-    }
-    for(int i = 0; i < 4; i++)
-    {
-        if(operators[i] > 0)
-        {
-            operators[i]--; // 연산자 하나 사용했으므로 1개 줄여줌
-            if(i == 0)
-                getanswer(result + operands[idx], idx+1);
-            else if(i == 1)
-                getanswer(result - operands[idx], idx+1);
-            else if(i == 2)
-                getanswer(result * operands[idx], idx+1);
-            else
-                getanswer(result / operands[idx], idx+1);
-            operators[i]++; // 다른 연산자를 사용할 것이므로 아까 줄였던 연산자 개수 늘려줌
-        }
-    }
-    return;
-}
-int main() {
-    cin >> N;
-    for(int i = 0; i < N; i++)
-        cin >> operands[i];
-    for(int i = 0; i < 4; i++)
-        cin >> operators[i];
-    getanswer(operands[0],1);
-    cout << mymax << '\n';
-    cout << mymin;
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+
+	cin >> n;
+	for (int i = 0; i < n; i++) 
+		cin >> num[i];
+	
+	int start = 0;
+	vector<int> brute(n - 1);
+	for (int i = 0; i < 4; i++) {
+		int op;
+		cin >> op;
+		fill(brute.begin() + start, brute.begin() + start + op, i);
+		start += op;
+	}
+
+	do {
+		int result = num[0];
+		for (int i = 0; i < n - 1; i++) {
+			if (brute[i] == 0)
+				result += num[i + 1];
+			else if(brute[i] == 1)
+				result -= num[i + 1];
+			else if (brute[i] == 2)
+				result *= num[i + 1];
+			else if (brute[i] == 3)
+				result /= num[i + 1];
+		}
+		minAns = min(minAns, result);
+		maxAns = max(maxAns, result);
+	} while (next_permutation(brute.begin(), brute.end()));
+
+	cout << maxAns << '\n';
+	cout << minAns << '\n';
+	return 0;
 }
