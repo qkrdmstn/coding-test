@@ -1,47 +1,67 @@
 #include <iostream>
 #include <string>
+#include <tuple>
+#include <queue>
 using namespace std;
 
 int n, m;
 string board[10];
 pair<int, int> bluePos, redPos;
-pair<int, int> bluePosCpy, redPosCpy;
+int dist[11][11][11][11];
 int dx[4] = {-1, 1, 0, 0};
 int dy[4] = { 0,0,-1,1 };
-int ans = 11;
 
-int tilt(int dir)
+int bfs()
 {
-	int n_bx = bluePosCpy.first, n_by = bluePosCpy.second, n_rx = redPosCpy.first, n_ry = redPosCpy.second;
+	queue<tuple<int, int, int, int>> q;
+	q.push({ bluePos.first, bluePos.second, redPos.first, redPos.second });
+	dist[bluePos.first][bluePos.second][redPos.first][redPos.second] = 1;
 
-	while (board[n_bx + dx[dir]][n_by + dy[dir]] == '.') {
-		n_bx += dx[dir];
-		n_by += dy[dir];
+	while (!q.empty()) {
+		int bx, by, rx, ry;
+		tie(bx, by, rx, ry) = q.front();
+		q.pop();
+
+		int cnt = dist[bx][by][rx][ry];
+		if (cnt > 10)
+			return -1;
+
+		for (int dir = 0; dir < 4; dir++) {
+			int n_bx = bx, n_by = by, n_rx = rx, n_ry = ry;
+
+			while (board[n_bx + dx[dir]][n_by + dy[dir]] == '.') {
+				n_bx += dx[dir];
+				n_by += dy[dir];
+			}
+			if (board[n_bx + dx[dir]][n_by + dy[dir]] == 'O')
+				continue;
+
+			while (board[n_rx + dx[dir]][n_ry + dy[dir]] == '.') {
+				n_rx += dx[dir];
+				n_ry += dy[dir];
+			}
+
+			if (board[n_rx + dx[dir]][n_ry + dy[dir]] == 'O')
+				return cnt;
+
+			if ((n_bx == n_rx) && (n_by == n_ry)) {
+				if (dir == 0)
+					rx < bx ? n_bx++ : n_rx++;
+				else if (dir == 1)
+					rx > bx ? n_bx-- : n_rx--;
+				else if (dir == 2)
+					ry < by ? n_by++ : n_ry++;
+				else
+					ry > by ? n_by-- : n_ry--;
+			}
+
+			if (dist[n_bx][n_by][n_rx][n_ry] != -1)
+				continue;
+			dist[n_bx][n_by][n_rx][n_ry] = cnt + 1;
+			q.push({ n_bx, n_by, n_rx, n_ry });
+		}
 	}
-	if (board[n_bx + dx[dir]][n_by + dy[dir]] == 'O')
-		return -1;
-
-	while (board[n_rx + dx[dir]][n_ry + dy[dir]] == '.') {
-		n_rx += dx[dir];
-		n_ry += dy[dir];
-	}
-
-	if (board[n_rx + dx[dir]][n_ry + dy[dir]] == 'O')
-		return 1;
-
-	if ((n_bx == n_rx) && (n_by == n_ry)) {
-		if (dir == 0)
-			redPosCpy.first < bluePosCpy.first ? n_bx++ : n_rx++;
-		else if (dir == 1)
-			redPosCpy.first > bluePosCpy.first ? n_bx-- : n_rx--;
-		else if (dir == 2)
-			redPosCpy.second < bluePosCpy.second ? n_by++ : n_ry++;
-		else
-			redPosCpy.second > bluePosCpy.second ? n_by-- : n_ry--;
-	}
-	redPosCpy = { n_rx, n_ry };
-	bluePosCpy = { n_bx, n_by };
-	return 0;
+	return -1;
 }
 
 int main(void)
@@ -64,31 +84,13 @@ int main(void)
 		}
 	}
 
-	////모든 경우의 수 순회
-	for (int tmp = 0; tmp < (1 << 2 * 10); tmp++) {
-		int brute = tmp;
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+			for (int k = 0; k < n; k++)
+				fill(dist[i][j][k], dist[i][j][k] + m, -1);
 
-		redPosCpy = redPos;
-		bluePosCpy = bluePos;
-
-		for (int i = 0; i < 10; i++) {
-			int dir = brute % 4;
-			brute /= 4;
-			//성공했으면, 현재 기울인 횟수 check
-			int result = tilt(dir);
-			//파란 구슬이 빠진 경우
-			if (result == -1)
-				break;
-			else if (result == 1) {
-				ans = min(i+1, ans);
-				break;
-			}
-		}
-	}
-	if (ans == 11)
-		cout << -1;
-	else
-		cout << ans;
+	
+	cout << bfs();
 
 	return 0;
 }
