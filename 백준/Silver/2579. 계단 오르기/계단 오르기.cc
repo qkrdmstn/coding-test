@@ -1,9 +1,9 @@
 #include <iostream>
 using namespace std;
 
-int n;
+int n, total;
 int stair[301];
-int table[301][3];
+int table[301];
 
 int main(void)
 {
@@ -13,17 +13,16 @@ int main(void)
 	cin >> n;
 	for (int i = 1; i <= n; i++) {
 		cin >> stair[i];
+		total += stair[i];
 	}
 	
-	table[1][1] = stair[1];
-	table[1][2] = 0;
-	table[2][1] = stair[2];
-	table[2][2] = stair[1] + stair[2];
-	
-	for (int i = 3; i <= n; i++) {
-		table[i][1] = max(table[i - 2][1], table[i-2][2]) + stair[i];
-		table[i][2] = table[i - 1][1] + stair[i];
-	}
-	cout << max(table[n][1], table[n][2]);
+	table[1] = stair[1];
+	table[2] = stair[2];
+	table[3] = stair[3];
+
+	for (int i = 4; i <= n; i++)
+		table[i] = min(table[i-2], table[i-3]) + stair[i];
+
+	cout << total - min(table[n - 1], table[n - 2]);
 	return 0;
 }
