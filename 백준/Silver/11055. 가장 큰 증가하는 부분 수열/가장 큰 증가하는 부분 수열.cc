@@ -21,9 +21,7 @@ int main(void)
 	for (int i = 2; i <= n; i++) {
 		for (int j = 1; j < i; j++) {
 			if (arr[j] < arr[i]) {
-				int val = d[j] + arr[i];
-				if (val > d[i])
-					d[i] = val;
+                d[i] = max(d[i], d[j] + arr[i]);
 			}
 		}
 	}
