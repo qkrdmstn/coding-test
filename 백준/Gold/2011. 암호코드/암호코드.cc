@@ -20,9 +20,11 @@ int main(void)
 	d[0] = 1;
 
 	for (int i = 1; i <= len; i++) {
-		if (a[i] > 0) d[i] = (d[i] + d[i - 1]) % mod;
-		int x = a[i - 1] * 10 + a[i];
-		if (x >= 10 && x <= 26) d[i] = (d[i] + d[i - 2]) % mod;
+		if (a[i] > 0)
+			d[i] = d[i - 1];
+		int x = (a[i - 1] * 10 + a[i]);
+		if (x >= 10 && x <= 26)
+			d[i] = (d[i] + d[i - 2]) % mod;
 	}
 	cout << d[len];
 
