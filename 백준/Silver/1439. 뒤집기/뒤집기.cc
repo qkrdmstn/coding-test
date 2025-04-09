@@ -3,7 +3,7 @@
 using namespace std;
 
 string s;
-int count0, count1;
+int cnt[2];
 
 int main(void)
 {
@@ -12,21 +12,13 @@ int main(void)
 
 	cin >> s;
 	
-	char before = s[0];
-	if (s[0] == '0')
-		count0++;
-	else
-		count1++;
-
+	cnt[s[0] - '0']++;
 	for (int i = 1; i < s.length(); i++) {
 		if (s[i - 1] != s[i]) {
-			if (s[i] == '0')
-				count0++;
-			else
-				count1++;
+			cnt[s[i] - '0']++;
 		}
 	}
 
-	cout << min(count0, count1);
+	cout << min(cnt[0], cnt[1]);
 	return 0;
 }
