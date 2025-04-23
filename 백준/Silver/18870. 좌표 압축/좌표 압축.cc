@@ -39,10 +39,8 @@ int main(void)
 	//정렬 및 중복 제거
 	sort(sortedArr, sortedArr + n);
 	
-	distinctArr[distinctArrLen] = sortedArr[distinctArrLen];
-	distinctArrLen++;
-	for (int i= 1; i < n; i++) {
-		if (sortedArr[i - 1] == sortedArr[i]) continue;
+	for (int i= 0; i < n; i++) {
+		if (i != 0 && sortedArr[i - 1] == sortedArr[i]) continue;
 		distinctArr[distinctArrLen] = sortedArr[i];
 		distinctArrLen++;
 	}
