@@ -23,7 +23,7 @@ int main(void)
 		for (int j = i + 1; j < n; j++) {
 			int l = lower_bound(a, a + n, -a[i] - a[j]) - a;
 
-			for (int k = -3; k <= 3; k++) {
+			for (int k = -1; k <= 1; k++) {
 				if (l + k == i || l + k == j) continue;
 				if (l + k < 0 || l + k >= n) continue;
 				if (abs(ans[0] + ans[1] + ans[2]) > abs(a[i] + a[j] + a[l + k]))
