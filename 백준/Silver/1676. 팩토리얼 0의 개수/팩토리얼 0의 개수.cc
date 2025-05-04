@@ -3,14 +3,16 @@ using namespace std;
 
 int main(void)
 {
-	ios::sync_with_stdio(0);
 	cin.tie(0);
+	ios::sync_with_stdio(0);
 
-	int n, ans = 0;;
+	int n;
 	cin >> n;
 	
-	for (int i = 5; i <= n; i *= 5) {
-		ans += n / i;
+	int ans = 0;
+	while (n != 0) {
+		ans += n / 5;
+		n /= 5;
 	}
 	cout << ans;
 	return 0;
