@@ -19,7 +19,7 @@ int main(void)
 	}
 
 	unsigned int ans = 0;
-	for (int i = 200'001; i >= 1; i--) {
+	for (int i = n; i >= 1; i--) {
 		for (int cup : v[i])
 			maxHeap.push(cup);
 
