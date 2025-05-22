@@ -14,7 +14,7 @@ int main(void)
 {
 	ios::sync_with_stdio(0);
 	cin.tie(0);
-	
+
 	cin >> n >> m;
 	cin >> k;
 	for (int i = 0; i < k; i++) {
@@ -26,19 +26,16 @@ int main(void)
 	for (int i = 0; i < m; i++) {
 		int numOfPeople;
 		cin >> numOfPeople;
-		for (int j = 0; j < numOfPeople; j++) {
-			int num;
-			cin >> num;
-			party[i].push_back(num);
-		}
 
-		for (int j = 0; j < numOfPeople; j++) {
-			for (int k = j + 1; k < numOfPeople; k++) {
-				int a = party[i][j];
-				int b = party[i][k];
-				adj[a][b] = 1;
-				adj[b][a] = 1;
-			}
+		int prv, nxt;
+		cin >> prv;
+		party[i].push_back(prv);
+
+		while (--numOfPeople) {
+			cin >> nxt;
+			party[i].push_back(nxt);
+			adj[nxt][prv] = 1;
+			adj[prv][nxt] = 1;
 		}
 	}
 
