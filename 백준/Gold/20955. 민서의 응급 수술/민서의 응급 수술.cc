@@ -1,11 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <tuple>
 using namespace std;
 
 int n, m, treeCnt;
-int p[100'005];
 vector<int> adj[100'005];
 bool vis[100'005];
 
