@@ -1,9 +1,6 @@
 #include <iostream>
-#include <string>
 #include <vector>
 #include <queue>
-#include <algorithm>
-#include <unordered_map>
 using namespace std;
 
 const int MXN = 32'005;
@@ -11,22 +8,7 @@ const int MXN = 32'005;
 int n, m;
 vector<int> adj[MXN];
 int indeg[MXN];
-
-void func()
-{
-	for (int j = 0; j < n; j++) {
-		for (int i = 1; i <= n; i++) {
-			if (indeg[i] == 0) {
-				indeg[i]--;
-				cout << i << ' ';
-				for (auto nxt : adj[i])
-					indeg[nxt]--;
-				break;
-			}
-		}
-	}
-
-}
+priority_queue<int, vector<int>, greater<int>> pq;
 
 int main(void)
 {
@@ -40,7 +22,24 @@ int main(void)
 		adj[u].push_back(v);
 		indeg[v]++;
 	}
-	func();
+
+	for (int i = 1; i <= n; i++) {
+		if (indeg[i] == 0) pq.push(i);
+	}
+
+	while (!pq.empty()){
+		int cur = pq.top();
+		pq.pop();
+		cout << cur << ' ';
+		for (int nxt : adj[cur]) {
+			indeg[nxt]--;
+			if (indeg[nxt] == 0)
+				pq.push(nxt);
+		}
+	}
 	
+	/*
+	최소 힙을 통해 최적화
+	*/
 	return 0;
 }
