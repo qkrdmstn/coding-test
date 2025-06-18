@@ -53,6 +53,7 @@ int main(void)
 		cin >> u >> v >> cost;
 		adj[u].push_back({ cost, v });
 		adj[v].push_back({ cost, u });
+		hi = max(cost, hi);
 	}
 
 	while (lo < hi) {
@@ -65,13 +66,4 @@ int main(void)
 	else cout << -1;
 	return 0;
 
-	/*
-	각 도시에서 다익스트라를 수행할 시, O(VElgE)가 되어 시간 초과가 발생
-	따라서, 면접장에서 도시로 가는 다익스트라를 수행
-	이때, 단방향 길이기 때문에 길을 거꾸로 입력하고,
-	면접장이 여러개이기 때문에 하나로 취급하여 우선순위 큐에 모두 삽입한다.
-	이러면 한 번의 다익스트라 수행으로 문제를 풀 수 있다.
-
-	+) N은 10^5, C 10^5 이므로 N*C = 최대 10^10 범위 -> int 범위 초과
-	*/
 }
