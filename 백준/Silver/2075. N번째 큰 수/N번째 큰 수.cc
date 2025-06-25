@@ -13,12 +13,15 @@ int main(void)
 	cin >> n;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			int x;
-			cin >> x;
-			pq.push(x);
-			if ((int)pq.size() > n) pq.pop();
+			int num;
+			cin >> num;
+			pq.push(num);
+			if ((int)pq.size() > n)
+				pq.pop();
 		}
 	}
-	cout << pq.top();
+
+	cout << pq.top() << '\n';
 	return 0;
+
 }
