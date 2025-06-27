@@ -1,40 +1,38 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 typedef long long ll;
+int n, k;
+vector<int> v;
+ll st = 0, ed = 0;
 
-int k, n;
-int a[10005];
-
-//dist로 구할 수 있는 랜선의 갯수
-int solve(ll dist)
+ll func(int len)
 {
-	ll result = 0;
-	for (int i = 0; i < k; i++)
-		result += a[i] / dist;
-	return result;
+	ll cnt = 0;
+	for (auto x : v)
+		cnt += x / len;
+	return cnt;
 }
 
 int main(void)
 {
-	ios::sync_with_stdio(0);
 	cin.tie(0);
+	ios::sync_with_stdio(0);
 
 	cin >> k >> n;
-	for (int i = 0; i < k; i++)
-		cin >> a[i];
-
-	//이분탐색
-	ll s = 1;
-	ll e = 0x7fffffff; //2^32 - 1
-	while (s < e) {
-		ll m = (s + e + 1) / 2;
-		if (solve(m) >= n)
-			s = m;
-		else
-			e = m - 1;
+	for (int i = 0; i < k; i++) {
+		int x; cin >> x; 
+		v.push_back(x);
+		if (x > ed)
+			ed = x;
 	}
-	cout << s;
 
+	while (st < ed) {
+		ll mid = (st + ed + 1) / 2;
+		if (func(mid) >= n) st = mid;
+		else ed = mid - 1;
+	}
+	cout << st;
 	return 0;
 }
