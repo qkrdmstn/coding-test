@@ -1,33 +1,35 @@
 #include <iostream>
-#include <vector>
 using namespace std;
-const int m = 123456 * 2;
+
+const int MX = 123456 * 2;
+
+int n;
+bool isPrime[MX + 1];
 
 int main(void)
 {
 	ios::sync_with_stdio(0);
 	cin.tie(0);
 
-	vector<bool> state(m + 1, true);
-	state[1] = false;
-	for (int i = 2; i <= m; i++) {
-		for (int j = 2*i; j <= m; j += i) {
-			if (!state[j]) continue;
-			state[j] = false;
+	fill(isPrime, isPrime + MX + 1, true);
+	isPrime[1] = false;
+	for (int i = 2; i * i <= MX; i++) {
+		for (int j = i * i; j <= MX; j += i) {
+			isPrime[j] = false;
 		}
 	}
 
 	while (true) {
-		int n;
 		cin >> n;
-		if (n == 0)
-			break;
+		if (!n) break;
 
-		int cnt = 0;
-		for (int i = n+1; i <= 2*n; i++) {
-			if (state[i]) 
-				cnt++;
+		int ans = 0;
+		for (int i = n + 1; i <= 2 * n; i++) {
+			if (isPrime[i]) ans++;
 		}
-		cout << cnt << '\n';
+		cout << ans << '\n';
 	}
+
+	return 0;
+
 }
