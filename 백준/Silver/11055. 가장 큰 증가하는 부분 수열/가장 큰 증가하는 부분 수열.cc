@@ -1,35 +1,30 @@
 #include <iostream>
 using namespace std;
 
-int n;
-//d[i] = {i번째 항으로 끝나는 증가하는 부분 수열의 합 중 최대}
-int d[1002];
-int arr[1002];
-
+int n, ans;
+int a[1005];
+int dp[1005];
 int main(void)
 {
 	cin.tie(0);
 	ios::sync_with_stdio(0);
 
 	cin >> n;
-	for (int i = 1; i <= n; i++) {
-		cin >> arr[i];
-		d[i] = arr[i];
+	for (int i = 0; i < n; i++) {
+		cin >> a[i];
+		dp[i] = a[i];
 	}
 
-
-	for (int i = 2; i <= n; i++) {
-		for (int j = 1; j < i; j++) {
-			if (arr[j] < arr[i]) {
-                d[i] = max(d[i], d[j] + arr[i]);
-			}
+	dp[0] = a[0];
+	for (int i = 1; i < n; i++) {
+		for (int j = 0; j < i; j++) {
+			if (a[j] < a[i])
+				dp[i] = max(dp[i], dp[j] + a[i]);
 		}
 	}
-
-	int ans = d[1];
-	for (int i = 2; i <= n; i++) {
-		ans = max(d[i], ans);
-	}
+	
+	for (int i = 0; i < n; i++)
+		ans = max(ans, dp[i]);
 	cout << ans;
 	return 0;
 }
