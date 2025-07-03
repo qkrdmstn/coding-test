@@ -3,29 +3,25 @@
 using namespace std;
 
 int n, m;
-int arr[8];
-int ans[8];
-bool isUsed[8];
+int ans[9], a[9];
+bool vis[9];
 
-void func(int cnt)
+void dfs(int len)
 {
-	if (cnt == m) {
-		for (int i = 0; i < cnt; i++)
+	if (len == m) {
+		for (int i = 0; i < m; i++)
 			cout << ans[i] << ' ';
 		cout << '\n';
 		return;
 	}
-	else {
-		int tmp = 0;
-		for (int i = 0; i < n; i++) {
-			if (isUsed[i] || tmp == arr[i])
-				continue;
-			isUsed[i] = true;
-			ans[cnt] = arr[i];
-			tmp = ans[cnt];
-			func(cnt + 1);
-			isUsed[i] = false;
-		}
+	int tmp = 0;
+	for (int i = 0; i < n; i++) {
+		if (vis[i] || tmp == a[i]) continue;
+		vis[i] = true;
+		ans[len] = a[i];
+		tmp = a[i];
+		dfs(len + 1);
+		vis[i] = false;
 	}
 }
 
@@ -36,9 +32,9 @@ int main(void)
 
 	cin >> n >> m;
 	for (int i = 0; i < n; i++)
-		cin >> arr[i];
-	sort(arr, arr + n);
+		cin >> a[i];
 
-	func(0);
+	sort(a, a + n);
+	dfs(0);
 	return 0;
 }
