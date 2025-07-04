@@ -16,11 +16,6 @@ int GetIndexOfValue(string str)
         return 3;
 }
 
-bool cmp(vector<int> a, vector<int> b)
-{
-    return a[sortBy] < b[sortBy];
-}
-
 vector<vector<int>> solution(vector<vector<int>> data, string ext, int val_ext, string sort_by) {
     vector<vector<int>> answer;
     
@@ -32,6 +27,7 @@ vector<vector<int>> solution(vector<vector<int>> data, string ext, int val_ext, 
             answer.push_back(data[i]);
     }
     
-    sort(answer.begin(), answer.end(), cmp);
+    sort(answer.begin(), answer.end(), [](vector<int> a, vector<int> b)
+                                    {return a[sortBy] < b[sortBy];});
     return answer;
 }
