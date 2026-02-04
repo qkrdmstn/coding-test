@@ -3,23 +3,22 @@
 #include <stack>
 using namespace std;
 
-stack<char> st;
 bool solution(string s)
 {
     bool answer = true;
-
-    for(int i=0; i<s.length(); i++){
-        if(s[i] == '('){
+    stack<char> st;
+    for(int i=0; i<s.length(); i++)
+    {
+        if(s[i] == '(')
             st.push(s[i]);
-        }
-        else if(s[i] == ')'){
-            if(!st.empty() && st.top() == '(')
+        else
+        {
+            if(!st.empty() && s[i] == ')')
                 st.pop();
             else
-                return false;
+                answer = false;
         }
     }
-    if(!st.empty())
-        return false;
+    if(!st.empty()) answer = false;
     return answer;
 }
