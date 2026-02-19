@@ -3,21 +3,10 @@
 #include <queue>
 using namespace std;
 
-bool visited[205];
 int solution(int n, vector<vector<int>> computers) {
     int answer = 0;
-    
-    vector<int> edge[205];
-    for(int i=0; i<n; i++)
-    {
-        for(int j=0; j<n; j++)
-        {
-            if(i == j) continue;
-            if(computers[i][j])
-                edge[i].push_back(j);
-        }
-    }
-    
+    vector<int> visited(n, false);
+
     for(int i=0; i<n; i++)
     {
         queue<int> q;
@@ -32,9 +21,11 @@ int solution(int n, vector<vector<int>> computers) {
         {
             int cur = q.front();
             q.pop();
-            for(auto nxt: edge[cur])
+            for(int nxt=0; nxt<n; nxt++)
             {
+                if(cur == nxt || computers[cur][nxt] == 0) continue;
                 if(visited[nxt]) continue;
+                
                 q.push(nxt);
                 visited[nxt] = true;
             }
