@@ -3,16 +3,15 @@
 #include <algorithm>
 using namespace std;
 
-bool dfs(string cur, vector<vector<string>>& tickets, vector<bool>& used, vector<string>& answer, int targetSize)
+bool DFS(string curCity, vector<vector<string>>& tickets, vector<bool>& used, vector<string>& answer)
 {
-    answer.push_back(cur);
-    if(answer.size() == targetSize) return true;
-    
+    answer.push_back(curCity);
+    if(answer.size() == tickets.size() + 1) return true;
     for(int i=0; i<tickets.size(); i++)
     {
-        if(tickets[i][0] != cur || used[i]) continue;
+        if(tickets[i][0] != curCity || used[i]) continue;
         used[i] = true;
-        if(dfs(tickets[i][1], tickets, used, answer, targetSize)) return true;
+        if(DFS(tickets[i][1], tickets, used, answer)) return true;
         used[i] = false;
     }
     answer.pop_back();
@@ -24,6 +23,6 @@ vector<string> solution(vector<vector<string>> tickets) {
     vector<bool> used(tickets.size(), false);
     
     sort(tickets.begin(), tickets.end());
-    dfs("ICN", tickets, used, answer, tickets.size()+1);
+    DFS("ICN", tickets, used, answer);
     return answer;
 }
