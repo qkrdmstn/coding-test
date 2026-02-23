@@ -3,26 +3,34 @@
 #include <algorithm>
 using namespace std;
 
-bool DFS(string curCity, vector<vector<string>>& tickets, vector<bool>& used, vector<string>& answer)
+bool func(string cur, int n, vector<bool>& used, vector<vector<string>>& tickets, vector<string>& arr, vector<vector<string>>& answers)
 {
-    answer.push_back(curCity);
-    if(answer.size() == tickets.size() + 1) return true;
-    for(int i=0; i<tickets.size(); i++)
+    if(arr.size() == n + 1)
     {
-        if(tickets[i][0] != curCity || used[i]) continue;
+        answers.push_back(arr);
+        return true;
+    }
+    for(int i=0; i<n; i++)
+    {
+        if(used[i] || tickets[i][0] != cur) continue;
         used[i] = true;
-        if(DFS(tickets[i][1], tickets, used, answer)) return true;
+        arr.push_back(tickets[i][1]);
+        if(func(tickets[i][1], n, used, tickets, arr, answers)) return true;
+        arr.pop_back();
         used[i] = false;
     }
-    answer.pop_back();
     return false;
 }
 
 vector<string> solution(vector<vector<string>> tickets) {
     vector<string> answer;
-    vector<bool> used(tickets.size(), false);
+    int n = tickets.size();
     
+    vector<bool> used(n);
+    vector<vector<string>> answers;
     sort(tickets.begin(), tickets.end());
-    DFS("ICN", tickets, used, answer);
+    
+    answer.push_back("ICN");
+    func("ICN", n, used, tickets, answer, answers);
     return answer;
 }
