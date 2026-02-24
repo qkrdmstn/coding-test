@@ -3,29 +3,30 @@
 #include <algorithm>
 using namespace std;
 
-bool DFS(string curCity, vector<vector<string>>& tickets, vector<bool>& used, vector<string>& answer)
+bool Backtracking(vector<string> &curPath, vector<bool>& used, vector<vector<string>>& tickets)
 {
-    answer.push_back(curCity);
-    
-    //모든 티켓을 사용한 경우 올바른 해에 도달한 것입니다.
-    if(answer.size() == tickets.size() + 1) return true;
+    if(curPath.size() == tickets.size() + 1)
+    {
+        return true;
+    }
     for(int i=0; i<tickets.size(); i++)
     {
-        if(tickets[i][0] != curCity || used[i]) continue;
+        if(used[i] || tickets[i][0] != curPath.back()) continue;
         used[i] = true;
-        if(DFS(tickets[i][1], tickets, used, answer)) return true;
+        curPath.push_back(tickets[i][1]);
+        if(Backtracking(curPath, used, tickets)) return true;
+        curPath.pop_back();
         used[i] = false;
     }
-    //현재 경우 모든 티켓을 사용하지 못했다면 이전 상태로 복귀합니다.
-    answer.pop_back();
     return false;
 }
 
 vector<string> solution(vector<vector<string>> tickets) {
     vector<string> answer;
     vector<bool> used(tickets.size(), false);
+    answer.push_back("ICN");
     
     sort(tickets.begin(), tickets.end());
-    DFS("ICN", tickets, used, answer);
+    Backtracking(answer, used, tickets);
     return answer;
 }
