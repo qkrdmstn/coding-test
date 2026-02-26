@@ -1,25 +1,23 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
-int n;
-int table[1000001];
-
+const int INF = 0x3f3f3f3f;
 int main(void)
 {
-	cin.tie(0);
-	ios::sync_with_stdio(0);
+	int n;
 	cin >> n;
+	vector<int> d(n + 1, INF);
 
-	table[1] = 0;
-	for (int i = 2; i <= n; i++) {
-		int m = table[i - 1] + 1;
-		if (i % 2 == 0)
-			m = min(table[i / 2] + 1, m);
-		if (i % 3 == 0)
-			m = min(table[i / 3] + 1, m);
-		table[i] = m;
+	d[1] = 0;
+	for(int i=2; i<=n; i++)
+	{
+		if(i % 2 == 0)
+			d[i] = min(d[i], d[i/2] + 1);
+		if(i % 3 == 0)
+			d[i] = min(d[i], d[i/3] + 1);
+		if(i > 1)
+			d[i] = min(d[i], d[i-1] + 1);
 	}
-
-	cout << table[n];
-	return 0;
+	cout << d[n];
 }
