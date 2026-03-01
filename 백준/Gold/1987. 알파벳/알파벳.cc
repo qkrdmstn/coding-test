@@ -6,7 +6,6 @@ int dx[4] = {0,1,0,-1};
 int dy[4] = {1,0,-1,0};
 void DFS(int cnt, int x, int y, vector<bool>& visited, vector<vector<char>>& board, int& answer)
 {
-	visited[board[x][y] -'A'] = true;
 	answer = max(answer, cnt);
 
 	int r = board.size();
@@ -17,9 +16,11 @@ void DFS(int cnt, int x, int y, vector<bool>& visited, vector<vector<char>>& boa
 		int ny = y + dy[i];
 		if(nx < 0 || nx >= r || ny < 0 || ny >= c) continue;
 		if(visited[board[nx][ny]-'A']) continue;
+		visited[board[nx][ny] - 'A'] = true;
 		DFS(cnt + 1, nx, ny, visited, board, answer);
+		visited[board[nx][ny] - 'A'] = false;
+
 	}
-	visited[board[x][y] -'A'] = false;
 }
 
 int main(void)
@@ -35,6 +36,7 @@ int main(void)
 			cin >> board[i][j];
 	}
 	int answer = 0;
+	visited[board[0][0] - 'A'] = true;
 	DFS(1, 0, 0, visited, board, answer);
 	cout << answer;
 	return 0;
