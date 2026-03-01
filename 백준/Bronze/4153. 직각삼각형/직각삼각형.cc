@@ -1,29 +1,24 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
 using namespace std;
-
 
 int main(void)
 {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-
 	int a, b, c;
-	while (true) {
+	while (true)
+	{
 		cin >> a >> b >> c;
-
 		if (a == 0 && b == 0 && c == 0)
 			break;
 
-		vector<int> v = { a,b,c };
-		sort(v.begin(), v.end());
+		string ans = "wrong";
+		if(a*a + b*b == c*c)
+			ans = "right";
+		if(a*a + c*c == b*b)
+			ans = "right";
+		if(b*b + c*c == a*a)
+			ans = "right";
 
-		if (v[2] * v[2] == (v[0] * v[0] + v[1] * v[1]))
-			cout << "right\n";
-		else
-			cout << "wrong\n";
+		cout << ans << '\n';
 	}
-
 	return 0;
 }
