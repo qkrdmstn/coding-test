@@ -23,11 +23,8 @@ int main(void)
 	{
 		int cur = q.front(); q.pop();
 		if (cur == k)
-		{
 			ans++;
-			continue;
-		}
-
+		if(dist[k] != -1 && dist[cur] > dist[k]) break;
 		for (int i = 0; i < 3; i++)
 		{
 			int nxt = cur;
