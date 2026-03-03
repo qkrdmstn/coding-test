@@ -2,25 +2,26 @@
 #include <vector>
 using namespace std;
 
-void postorder(int st, int ed, vector<int>& preorder)
+void postorder(int st, int ed, vector<int>& pre)
 {
-    // st >= ed면 자식이 없는 노드에 도달.
-	if(st>=ed) return;
+	if(st >= ed) return;
+	int root = pre[st];
 
-	int root = preorder[st];
-	int idx = st;
-    //루트보다 큰 값을 찾을 때까지 전진
-	while (idx < ed)
-	{
-		if(preorder[idx] > root) break;
+	int idx = st + 1;
+	while (idx < ed && pre[idx] < root)
 		idx++;
-	}
-	postorder(st+1, idx, preorder);
-	postorder(idx, ed, preorder);
+	
+	//왼쪽 서브 트리 방문
+	postorder(st + 1, idx, pre);
+	//오른쪽 서브 트리 방문
+	postorder(idx, ed, pre);
+	//루트 출력
 	cout << root << "\n";
 }
+
 int main(void)
 {
+
 	int n;
 	vector<int> preorder;
 	while (cin >> n)
