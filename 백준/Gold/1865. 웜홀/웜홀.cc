@@ -41,21 +41,13 @@ int main(void)
 				}
 			}
 		}
-
 		bool ans = false;
-		for (int k = 1; k <= n; k++)
+		for (int i = 1; i <= n; i++)
 		{
-			for (int i = 1; i <= n; i++)
-			{
-				if (dist[i][k] + dist[k][i] < 0)
-				{
-					ans = true;
-					break;
-				}
-			}
-			if (ans) break;
+			if(dist[i][i] < 0)
+				ans = true;
 		}
-		if (ans) cout << "YES\n";
+		if(ans) cout <<"YES\n";
 		else cout << "NO\n";
 	}
 	return 0;
