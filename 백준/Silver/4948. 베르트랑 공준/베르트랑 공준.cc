@@ -1,35 +1,35 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
-const int MX = 123456 * 2;
+void RangePrime(int n, vector<bool>& isPrime)
+{
+	for (int i = 2; i * i <= n; i++)
+	{
+		for (int j = i * i; j <= n; j += i)
+			isPrime[j] = false;
+	}
+}
 
-int n;
-bool isPrime[MX + 1];
+int Count(int n, vector<bool>& isPrime)
+{
+	int cnt = 0;
+	for(int i= n+1; i<=2*n; i++)
+		cnt += isPrime[i];
+	return cnt;
+}
 
 int main(void)
 {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
+	vector<bool> isPrime(123457*2, true);
+	RangePrime(123456*2, isPrime);
 
-	fill(isPrime, isPrime + MX + 1, true);
-	isPrime[1] = false;
-	for (int i = 2; i * i <= MX; i++) {
-		for (int j = i * i; j <= MX; j += i) {
-			isPrime[j] = false;
-		}
-	}
-
-	while (true) {
+	while (true)
+	{
+		int n;
 		cin >> n;
-		if (!n) break;
-
-		int ans = 0;
-		for (int i = n + 1; i <= 2 * n; i++) {
-			if (isPrime[i]) ans++;
-		}
-		cout << ans << '\n';
+		if(n == 0) break;
+		cout << Count(n, isPrime) << "\n";
 	}
-
 	return 0;
-
 }
