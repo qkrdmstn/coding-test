@@ -3,36 +3,40 @@
 using namespace std;
 
 typedef long long ll;
-int n, k;
-vector<int> v;
-ll st = 0, ed = 0;
 
-ll func(int len)
+ll CutLAN(ll len, vector<ll>& arr)
 {
-	ll cnt = 0;
-	for (auto x : v)
-		cnt += x / len;
-	return cnt;
+	ll sum = 0;
+	for(auto &a: arr)
+		sum += a/len;
+	return sum;
 }
 
 int main(void)
 {
-	cin.tie(0);
-	ios::sync_with_stdio(0);
-
+	int k, n;
 	cin >> k >> n;
-	for (int i = 0; i < k; i++) {
-		int x; cin >> x; 
-		v.push_back(x);
-		if (x > ed)
-			ed = x;
+	
+	ll s = 1;
+	ll e = 0;
+	vector<ll> arr(k);
+	for (int i = 0; i < k; i++)
+	{
+		cin >> arr[i];
+		e = max(e, arr[i]);
 	}
 
-	while (st < ed) {
-		ll mid = (st + ed + 1) / 2;
-		if (func(mid) >= n) st = mid;
-		else ed = mid - 1;
+	ll ans = 0;
+	while (s <= e)
+	{
+		ll m = s + (e-s)/2;
+		if (CutLAN(m, arr) >= n)
+		{
+			ans = m;
+			s = m + 1;
+		}
+		else e = m - 1;
 	}
-	cout << st;
+	cout << ans;
 	return 0;
 }
