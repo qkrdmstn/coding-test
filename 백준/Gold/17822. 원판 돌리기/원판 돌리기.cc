@@ -1,106 +1,109 @@
 #include <iostream>
 #include <vector>
 #include <deque>
-#include <queue>
 using namespace std;
 
-void rotate(deque<int>& target, int dir, int k)
-{
+int dx[4] = {0,1,0,-1};
+int dy[4] = {1,0,-1,0};
 
+void Rotate(deque<int>& dq, int d, int k)
+{
 	while (k--)
 	{
 		//시계
-		if (dir == 0)
+		if (d == 0)
 		{
-			target.push_front(target.back());
-			target.pop_back();
+			dq.push_front(dq.back());
+			dq.pop_back();
 		}
+		//반시계
 		else
 		{
-			target.push_back(target.front());
-			target.pop_front();
+			dq.push_back(dq.front());
+			dq.pop_front();
 		}
 	}
 }
 
-void remove(vector<deque<int>>& dqVector, int n, int m)
+void Remove(vector<deque<int>>& board, int N, int M)
 {
-	int dx[4] = {0,1,0,-1};
-	int dy[4] = {1,0,-1,0};
-
-	vector<pair<int, int>> removed;
 	int sum = 0;
 	int cnt = 0;
-	for (int i = 1; i <= n; i++)
+	vector<pair<int, int>> remove;
+	for (int i = 1; i <= N; i++)
 	{
-		for (int j = 0; j < m; j++)
+		for (int j = 0; j < M; j++)
 		{
-			if(dqVector[i][j] == 0) continue;
-			sum += dqVector[i][j];
+			if(board[i][j] == 0) continue;
+			sum += board[i][j];
 			cnt++;
+
+			int curNum = board[i][j];
 			for (int dir = 0; dir < 4; dir++)
 			{
 				int nx = i + dx[dir];
 				int ny = j + dy[dir];
-				if (nx < 1 || nx > n) continue;
-				if (ny < 0 || ny >= m) ny = (ny + m) % m;
-				if (dqVector[i][j] == dqVector[nx][ny]) removed.push_back({i, j});
-				
+				if (nx < 1 || nx > N) continue;
+				//원형 인덱스 처리를 진행합니다.
+				if (ny < 0 || ny >= M) ny = (ny + M) % M;
+
+				if (board[nx][ny] == curNum)
+				{
+					remove.push_back({i, j});
+					break;
+				}
 			}
 		}
 	}
 
-	if (removed.empty())
+	if (remove.empty())
 	{
 		float avg = (float)sum/cnt;
-		for (int i = 1; i <= n; i++)
+		for (int i = 1; i <= N; i++)
 		{
-			for (int j = 0; j < m; j++)
+			for (int j = 0; j < M; j++)
 			{
-				if (dqVector[i][j] == 0) continue;
-				if(dqVector[i][j] > avg) dqVector[i][j]--;
-				else if(dqVector[i][j] < avg) dqVector[i][j]++;
+				if (board[i][j] == 0) continue;
+				if(board[i][j] < avg)
+					board[i][j]++;
+				else if(board[i][j] > avg)
+					board[i][j]--;
 			}
 		}
 	}
 	else
 	{
-		for (auto r : removed)
-			dqVector[r.first][r.second] = 0;
+		for (auto& r : remove)
+			board[r.first][r.second] = 0;
 	}
 }
 
 int main(void)
 {
-	int n, m, t;
-	cin >> n >> m >> t;
-
-	vector<deque<int>> dqVector(n+1, deque<int>());
-	for (int i = 1; i <= n; i++)
+	int N, M, T;
+	cin >> N >> M >> T;
+	
+	vector<deque<int>> board(N + 1, deque<int>(M, 0));
+	for (int i = 1; i <= N; i++)
 	{
-		for (int j = 0; j < m; j++)
-		{
-			int num;
-			cin >> num;
-			dqVector[i].push_back(num);
-		}
+		for(int j=0; j<M; j++)
+			cin >> board[i][j];
 	}
 
-	while (t--)
+	while (T--)
 	{
 		int x, d, k;
 		cin >> x >> d >> k;
-		for(int i=x; i<=n; i+=x)
-			rotate(dqVector[i], d, k);
-		remove(dqVector, n, m);
+		for(int i=x; i<=N; i+=x)
+			Rotate(board[i], d, k);
+		Remove(board, N, M);
 	}
 
 	int ans = 0;
-	for (int i = 1; i <= n; i++)
+	for (int i = 1; i <= N; i++)
 	{
-		for (int j = 0; j < m; j++)
-			ans += dqVector[i][j];
+		for (int j = 0; j < M; j++)
+			ans += board[i][j];
 	}
 	cout << ans;
-	return 0;
 }
