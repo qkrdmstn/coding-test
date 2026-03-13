@@ -1,42 +1,47 @@
 #include <iostream>
-#include <tuple>
+#include <queue>
+#include <vector>
 #include <algorithm>
-#include <set>
 using namespace std;
 
-#define X first
-#define Y second
+bool cmp(pair<int, int> a, pair<int, int> b)
+{
+	if (a.first == b.first)
+		return a.second > b.second;
+	return a.first < b.first;
+}
 
-int n, k;
-multiset<int> bag;
-pair<int, int> jewel[300003]; // {가격, 무게}
 int main(void)
 {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-
+	int n, k;
 	cin >> n >> k;
-	for (int i = 0; i < n; i++) {
-		int m, v;
-		cin >> jewel[i].Y >> jewel[i].X;
-	}
-	sort(jewel, jewel + n);
 
-	for (int i = 0; i < k; i++) {
-		int c;
-		cin >> c;
-		bag.insert(c);
-	}
+	vector<pair<int, int>> jewel(n);
+	for(int i=0; i<n; i++)
+		cin >> jewel[i].first >> jewel[i].second;
 
+	vector<int> bag(k);
+	for(int i=0; i<k; i++)
+		cin >> bag[i];
+
+	sort(jewel.begin(), jewel.end(), cmp);
+	sort(bag.begin(), bag.end());
+
+	int cnt = 0;
 	long long ans = 0;
-	for (int i = n - 1; i >= 0; i--) {
-		int m, v;
-		tie(v, m) = jewel[i];
-
-		auto iter = bag.lower_bound(m);
-		if (iter == bag.end()) continue;
-		ans += v;
-		bag.erase(iter);
+	priority_queue<int, vector<int>> pq;
+	for (int i = 0; i < k; i++)
+	{
+		while (jewel[cnt].first <= bag[i] && cnt < n)
+		{
+			pq.push(jewel[cnt].second);
+			cnt++;
+		}
+		if (!pq.empty())
+		{
+			ans += pq.top();
+			pq.pop();
+		}
 	}
 	cout << ans;
 	return 0;
