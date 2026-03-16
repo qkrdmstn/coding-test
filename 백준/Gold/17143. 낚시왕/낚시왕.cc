@@ -47,8 +47,8 @@ void MoveSharks(vector<vector<shark>>& board, int R, int C)
 				y = ny;
 				sh.d = dir;
 			}
-			if(board[i][j].z > nxtBoard[x][y].z)
-				nxtBoard[x][y] = board[i][j];
+			if(sh.z > nxtBoard[x][y].z)
+				nxtBoard[x][y] = sh;
 
 		}
 	}
