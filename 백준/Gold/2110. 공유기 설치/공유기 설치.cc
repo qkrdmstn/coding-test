@@ -1,39 +1,48 @@
 #include <iostream>
+#include <vector>
 #include <algorithm>
 using namespace std;
 
-int n, c;
-int a[200005];
+typedef long long ll;
 
-bool solve(int len)
+bool check(ll len, vector<ll>& home, int n, int c)
 {
-	int idx = 0;
-	int cnt = 0;
-	while (idx != n) {
-		idx = lower_bound(a + idx, a + n, a[idx] + len) - a;
-		cnt++;
+	int cnt = 1;
+	ll prev = home[0];
+	for (int i = 1; i < n; i++)
+	{
+		if (home[i] - prev >= len)
+		{
+			cnt++;
+			prev = home[i];
+		}
 	}
 	return cnt >= c;
 }
 
 int main(void)
 {
-	cin.tie(0);
-	ios::sync_with_stdio(0);
-
+	int n, c;
 	cin >> n >> c;
-	for (int i = 0; i < n; i++) cin >> a[i];
-	sort(a, a + n);
-	
-	int s = 1;
-	int e = 1000000000;
-	while (s < e) {
-		int m = (s + e + 1) / 2;
-		if (solve(m))
-			s = m;
+	vector<ll> home(n);
+	for (int i = 0; i < n; i++)
+		cin >> home[i];
+	sort(home.begin(), home.end());
+
+
+	ll st = 1, ed = home[n-1] - home[0];
+	ll ans = 0;
+	while (st <= ed)
+	{
+		ll m = st + (ed-st)/2;
+		if (check(m, home, n, c))
+		{
+			ans = m;
+			st = m+1;
+		}
 		else
-			e = m - 1;
+			ed = m-1;
 	}
-	cout << s;
+	cout << ans;
 	return 0;
 }
