@@ -1,96 +1,99 @@
 #include <iostream>
-#include <string>
+#include <vector>
 #include <tuple>
+#include <string>
 #include <queue>
+#include <algorithm>
 using namespace std;
 
-int n, m;
-string board[10];
-pair<int, int> bluePos, redPos;
-int dist[11][11][11][11];
-int dx[4] = {-1, 1, 0, 0};
+//상하좌우
+int dx[4] = { -1,1,0,0 };
 int dy[4] = { 0,0,-1,1 };
 
-int bfs()
+int BFS(string board[15], vector<pair<int, int>>& pos)
 {
 	queue<tuple<int, int, int, int>> q;
-	q.push({ bluePos.first, bluePos.second, redPos.first, redPos.second });
-	dist[bluePos.first][bluePos.second][redPos.first][redPos.second] = 1;
+	int dist[15][15][15][15];
+	for(int i=0; i<15; i++)
+		for(int j=0; j<15; j++)
+			for(int k=0; k<15; k++)
+				fill(dist[i][j][k], dist[i][j][k] + 15, -1);
+	q.push({ pos[0].first, pos[0].second, pos[1].first, pos[1].second });
+	dist[pos[0].first][pos[0].second][pos[1].first][pos[1].second] = 1;
 
-	while (!q.empty()) {
+	while (!q.empty())
+	{
 		int bx, by, rx, ry;
-		tie(bx, by, rx, ry) = q.front();
-		q.pop();
+		tie(bx, by, rx, ry) = q.front(); q.pop();
 
 		int cnt = dist[bx][by][rx][ry];
 		if (cnt > 10)
 			return -1;
 
-		for (int dir = 0; dir < 4; dir++) {
-			int n_bx = bx, n_by = by, n_rx = rx, n_ry = ry;
-
-			while (board[n_bx + dx[dir]][n_by + dy[dir]] == '.') {
-				n_bx += dx[dir];
-				n_by += dy[dir];
+		for (int i = 0; i < 4; i++)
+		{
+			int nbx = bx, nby = by, nrx = rx, nry = ry;
+			while (board[nbx + dx[i]][nby + dy[i]] == '.')
+			{
+				nbx += dx[i];
+				nby += dy[i];
 			}
-			if (board[n_bx + dx[dir]][n_by + dy[dir]] == 'O')
+			if (board[nbx + dx[i]][nby + dy[i]] == 'O')
 				continue;
 
-			while (board[n_rx + dx[dir]][n_ry + dy[dir]] == '.') {
-				n_rx += dx[dir];
-				n_ry += dy[dir];
+			while (board[nrx + dx[i]][nry + dy[i]] == '.')
+			{
+				nrx += dx[i];
+				nry += dy[i];
 			}
-
-			if (board[n_rx + dx[dir]][n_ry + dy[dir]] == 'O')
+			if (board[nrx + dx[i]][nry + dy[i]] == 'O')
 				return cnt;
 
-			if ((n_bx == n_rx) && (n_by == n_ry)) {
-				if (dir == 0)
-					rx < bx ? n_bx++ : n_rx++;
-				else if (dir == 1)
-					rx > bx ? n_bx-- : n_rx--;
-				else if (dir == 2)
-					ry < by ? n_by++ : n_ry++;
+			if ((nbx == nrx) && (nby == nry))
+			{
+				if (i == 0)
+					bx < rx ? nrx++ : nbx++;
+				else if (i == 1)
+					bx > rx ? nrx-- : nbx--;
+				else if (i == 2)
+					by < ry ? nry++ : nby++;
 				else
-					ry > by ? n_by-- : n_ry--;
+					by > ry ? nry-- : nby--;
 			}
 
-			if (dist[n_bx][n_by][n_rx][n_ry] != -1)
-				continue;
-			dist[n_bx][n_by][n_rx][n_ry] = cnt + 1;
-			q.push({ n_bx, n_by, n_rx, n_ry });
+			if(dist[nbx][nby][nrx][nry] != -1) continue;
+			dist[nbx][nby][nrx][nry] = cnt + 1;
+			q.push({nbx, nby, nrx, nry});
 		}
 	}
+
 	return -1;
 }
 
 int main(void)
 {
-	cin.tie(0);
-	ios::sync_with_stdio(0);
-
-	cin >> n >> m;
-	for (int i = 0; i < n; i++) {
+	int N, M;
+	cin >> N >> M;
+	string board[15];
+	vector<pair<int, int>> pos(2);
+	for (int i = 0; i < N; i++)
+	{
 		cin >> board[i];
-		for (int j = 0; j < m; j++) {
-			if (board[i][j] == 'R') {
-				redPos = { i,j };
+		for (int j = 0; j < M; j++)
+		{
+			if (board[i][j] == 'R')
+			{
+				pos[1] = { i, j };
 				board[i][j] = '.';
 			}
-			if (board[i][j] == 'B') {
-				bluePos = { i, j };
+			else if (board[i][j] == 'B')
+			{
+				pos[0] = { i, j };
 				board[i][j] = '.';
 			}
 		}
 	}
 
-	for (int i = 0; i < n; i++)
-		for (int j = 0; j < m; j++)
-			for (int k = 0; k < n; k++)
-				fill(dist[i][j][k], dist[i][j][k] + m, -1);
-
-	
-	cout << bfs();
-
+	cout << BFS(board, pos);
 	return 0;
 }
