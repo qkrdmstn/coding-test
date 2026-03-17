@@ -22,6 +22,9 @@ bool check(ll len, vector<ll>& home, int n, int c)
 
 int main(void)
 {
+	cin.tie(0);
+	ios::sync_with_stdio(0);
+
 	int n, c;
 	cin >> n >> c;
 	vector<ll> home(n);
