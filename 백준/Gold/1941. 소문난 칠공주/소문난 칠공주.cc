@@ -1,100 +1,95 @@
 #include <iostream>
-#include <queue>
+#include <vector>
 #include <string>
+#include <queue>
+#include <tuple>
 using namespace std;
 
-string seat[5];
-int princess[7];
-bool isPrincess [5][5];
-int ans;
+int dx[4] = { 0,1,0,-1 };
+int dy[4] = { 1,0,-1,0 };
 
-queue<pair<int, int>> q;
-int dx[4] = { 0,0,-1,1 };
-int dy[4] = { 1,-1,0,0 };
-bool visited[5][5];
-
-pair<int, int> Convert1Dto2D(int i)
+int ConvertCoord1D(int x, int y)
 {
-	return { i / 5, i % 5 };
+	return (x * 5) + y;
 }
 
-//BFS를 활용해 모든 공주가 이웃한지 확인 및 이다솜파 Count
-bool IsAdjacency()
+pair<int, int> ConvertCoord2D(int x)
 {
-	int cnt = 0, cntS = 0;
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++)
-			visited[i][j] = false;
-	}
-
-	pair<int, int> pos = Convert1Dto2D(princess[0]);
-	visited[pos.first][pos.second] = true;
-	q.push(pos);
-
-	while (!q.empty()) {
-		pair<int, int> cur = q.front();
-		q.pop();
-
-		//이다솜파 Count
-		if (seat[cur.first][cur.second] == 'S')
-			cntS++;
-		cnt++;
-
-		for (int dir = 0; dir < 4; dir++) {
-			int nx = cur.first + dx[dir];
-			int ny = cur.second + dy[dir];
-
-			if (nx < 0 || nx >= 5 || ny < 0 || ny >= 5)
-				continue;
-			if (!isPrincess[nx][ny] || visited[nx][ny])
-				continue;
-
-			q.push({ nx, ny });
-			visited[nx][ny] = true;
-		}
-	}
-	
-	if (cnt == 7 && cntS >= 4)
-		return true;
-	return false;
+	pair<int, int> res = { x / 5, x % 5 };
+	return res;
 }
 
-//백트래킹으로 중복 없는 조합을 선택
-void func(int cnt, int start)
+void DFS(int cur, vector<int>& result, vector<vector<int>>& results)
 {
-	if (cnt == 7) {
-		if (IsAdjacency()) {
-			ans++;
-		}
+	if (result.size() >= 7)
+	{
+		results.push_back(result);
 		return;
 	}
-	else {
-		for (int i = start; i < 25; i++) {
-			pair<int, int> pos = Convert1Dto2D(i);
-			if (isPrincess[pos.first][pos.second])
-				continue;
-			isPrincess[pos.first][pos.second] = true;
-			princess[cnt] = i;
-			func(cnt + 1, i + 1);
-			isPrincess[pos.first][pos.second] = false;
+
+	for (int i = cur; i < 25; i++)
+	{
+		result.push_back(i);
+		DFS(i + 1, result, results);
+		result.pop_back();
+	}
+}
+
+bool BFS(vector<string>& board, vector<int>& result)
+{
+	bool vis[5][5] = { false };
+	bool isPicked[5][5] = { false };
+
+	for (auto& r : result)
+		isPicked[r / 5][r % 5] = true;
+
+	queue<pair<int, int>> q;
+	int cx = result[0] / 5;
+	int cy = result[0] % 5;
+
+	q.push({ cx, cy });
+	vis[cx][cy] = true;
+
+	int cnt = 0;
+	int sCnt = 0;
+	while (!q.empty())
+	{
+		tie(cx, cy) = q.front(); q.pop();
+
+		cnt++;
+		if (board[cx][cy] == 'S') sCnt++;
+
+		for (int i = 0; i < 4; i++)
+		{
+			int nx = cx + dx[i];
+			int ny = cy + dy[i];
+			if (nx < 0 || nx >= 5 || ny < 0 || ny >= 5) continue;
+			if (vis[nx][ny] || !isPicked[nx][ny]) continue;
+			q.push({ nx, ny });
+			vis[nx][ny] = true;
 		}
 	}
+
+	if (cnt == 7 && sCnt >= 4) return true;
+	else return false;
 }
 
 int main(void)
 {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-
+	vector<string> board(5);
 	for (int i = 0; i < 5; i++)
-		cin >> seat[i];
-	func(0, 0);
-	cout << ans;
+		cin >> board[i];
 
-	/*
-	2단계로 구현.
-	1. 2차원 데이터를 1차원으로 변환한 뒤, 백트래킹(DFS)를 활용해서 중복 없는 조합을 선택
-	2. BFS를 활용해서 선택된 조합이 모두 이웃한지 확인하여 최종적인 cnt 증가
-	*/
+	vector<vector<int>> results;
+	vector<int> result;
+	DFS(0, result, results);
+
+	int ans = 0;
+	for (auto& r : results)
+	{
+		if (BFS(board, r))ans++;
+	}
+
+	cout << ans;
 	return 0;
 }
