@@ -1,99 +1,105 @@
 #include <iostream>
 #include <vector>
-#include <tuple>
-#include <string>
 #include <queue>
+#include <string>
+#include <tuple>
 #include <algorithm>
 using namespace std;
 
-//상하좌우
-int dx[4] = { -1,1,0,0 };
-int dy[4] = { 0,0,-1,1 };
+int dx[4] = { 0,1,0,-1 };
+int dy[4] = { 1,0,-1,0 };
 
-int BFS(string board[15], vector<pair<int, int>>& pos)
+int BFS(pair<int, int> redPos, pair<int, int> bluePos, string board[], int n, int m)
 {
 	queue<tuple<int, int, int, int>> q;
-	int dist[15][15][15][15];
-	for(int i=0; i<15; i++)
-		for(int j=0; j<15; j++)
-			for(int k=0; k<15; k++)
-				fill(dist[i][j][k], dist[i][j][k] + 15, -1);
-	q.push({ pos[0].first, pos[0].second, pos[1].first, pos[1].second });
-	dist[pos[0].first][pos[0].second][pos[1].first][pos[1].second] = 1;
+	int dist[10][10][10][10];
+	for (int i = 0; i < 10; i++)
+		for (int j = 0; j < 10; j++)
+			for (int k = 0; k < 10; k++)
+				fill(dist[i][j][k], dist[i][j][k] + 10, -1);
+
+	int rx, ry, bx, by;
+	tie(rx, ry) = redPos;
+	tie(bx, by) = bluePos;
+
+	q.push({ rx, ry, bx, by });
+	dist[rx][ry][bx][by] = 0;
 
 	while (!q.empty())
 	{
-		int bx, by, rx, ry;
-		tie(bx, by, rx, ry) = q.front(); q.pop();
+		int crx, cry, cbx, cby;
+		tie(crx, cry, cbx, cby) = q.front(); q.pop();
 
-		int cnt = dist[bx][by][rx][ry];
-		if (cnt > 10)
-			return -1;
-
+		if (dist[crx][cry][cbx][cby] >= 10) break;
 		for (int i = 0; i < 4; i++)
 		{
-			int nbx = bx, nby = by, nrx = rx, nry = ry;
+			int nrx = crx, nry = cry, nbx = cbx, nby = cby;
+
+			//파란 구슬을 먼저 움직여 탈출하는지 확인
 			while (board[nbx + dx[i]][nby + dy[i]] == '.')
 			{
 				nbx += dx[i];
 				nby += dy[i];
 			}
 			if (board[nbx + dx[i]][nby + dy[i]] == 'O')
-				continue;
+			continue;
 
+			//빨간 구슬 이동
 			while (board[nrx + dx[i]][nry + dy[i]] == '.')
 			{
 				nrx += dx[i];
 				nry += dy[i];
 			}
 			if (board[nrx + dx[i]][nry + dy[i]] == 'O')
-				return cnt;
+				return dist[crx][cry][cbx][cby] + 1;
 
-			if ((nbx == nrx) && (nby == nry))
+			//마지막 위치가 겹치면 초기 위치에 기반해서 조정
+			if (nrx == nbx && nry == nby)
 			{
 				if (i == 0)
-					bx < rx ? nrx++ : nbx++;
+					cry < cby ? nry-- : nby--;
 				else if (i == 1)
-					bx > rx ? nrx-- : nbx--;
+					crx < cbx ? nrx-- : nbx--;
 				else if (i == 2)
-					by < ry ? nry++ : nby++;
-				else
-					by > ry ? nry-- : nby--;
+					cry > cby ? nry++ : nby++;
+				else if (i == 3)
+					crx > cbx ? nrx++ : nbx++;
 			}
+			if (dist[nrx][nry][nbx][nby] >= 0) continue;
 
-			if(dist[nbx][nby][nrx][nry] != -1) continue;
-			dist[nbx][nby][nrx][nry] = cnt + 1;
-			q.push({nbx, nby, nrx, nry});
+			q.push({ nrx, nry, nbx, nby });
+			dist[nrx][nry][nbx][nby] = dist[crx][cry][cbx][cby] + 1;
 		}
 	}
-
 	return -1;
 }
 
 int main(void)
 {
-	int N, M;
-	cin >> N >> M;
-	string board[15];
-	vector<pair<int, int>> pos(2);
-	for (int i = 0; i < N; i++)
+	int n, m;
+	cin >> n >> m;
+	string board[10];
+
+	pair<int, int> redPos;
+	pair<int, int> bluePos;
+	for (int i = 0; i < n; i++)
 	{
 		cin >> board[i];
-		for (int j = 0; j < M; j++)
+		for (int j = 0; j < m; j++)
 		{
 			if (board[i][j] == 'R')
 			{
-				pos[1] = { i, j };
+				redPos = { i, j };
 				board[i][j] = '.';
 			}
 			else if (board[i][j] == 'B')
 			{
-				pos[0] = { i, j };
+				bluePos = { i, j };
 				board[i][j] = '.';
 			}
 		}
 	}
 
-	cout << BFS(board, pos);
+	cout << BFS(redPos, bluePos, board, n, m);
 	return 0;
 }
