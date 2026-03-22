@@ -1,29 +1,31 @@
 #include <iostream>
-#include <vector>
 using namespace std;
 
 typedef long long ll;
-const int PRIME = 1000000007;
 
-ll Pow(ll a, ll exp)
-{
-	if (exp == 0) return 1;
-	if (exp == 1) return a % PRIME;
+const ll PRIME = 1'000'000'007;
 
-	ll half = Pow(a, exp / 2);
-	ll res = (half * half) % PRIME; // 1. 제곱 후 나머지 연산
-
-	if (exp % 2 == 1) {
-		res = (res * (a % PRIME)) % PRIME; // 2. 홀수일 때 추가 곱셈 후 나머지 연산
-	}
-
-	return res;
-}
-
-int gcd(int a, int b)
+ll gcd(ll a, ll b)
 {
 	if(b==0) return a;
 	return gcd(b, a%b);
+}
+
+ll pow(ll num, ll exp)
+{
+	if(exp == 0) return 1;
+	if(exp == 1) return num % PRIME;
+
+	if (exp % 2 == 0)
+	{
+		ll half = pow(num, exp/2);
+		return (half * half) % PRIME;
+	}
+	else
+	{
+		ll half = pow(num, (exp-1)/2);
+		return (((half * half) % PRIME) * num) % PRIME;
+	}
 }
 
 int main(void)
@@ -31,22 +33,21 @@ int main(void)
 	int m;
 	cin >> m;
 
-
-	// a/b(mod P)는 성립이 안되기 때문에 b의 역원(b^(P-2))를 계산해서
-	//a*b^-1 (mod P)를 계산한다.
-	ll sum = 0;
-	for (int i = 0; i < m; i++)
+	ll ans = 0;
+	while (m--)
 	{
-		int n, s;
+		ll n, s;
 		cin >> n >> s;
-		int g = gcd(n, s);
-		n /= g;
-		s /= g;
 
-		// s*n^(P-2) % PRIME
-		ll inverseN = Pow(n, PRIME-2) % PRIME;
-		sum = (sum + s * inverseN) % PRIME;
+		ll g = gcd(n, s);
+
+		n/=g;
+		s/=g;
+
+		ll invN = pow(n, PRIME-2) % PRIME;
+		ans += (s * invN) % PRIME;
+		ans %= PRIME;
 	}
-	cout << sum;
+	cout << ans;
 	return 0;
 }
