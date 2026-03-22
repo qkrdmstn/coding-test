@@ -1,60 +1,61 @@
 #include <iostream>
-#include <vector>
 using namespace std;
 
-int offset[3] = {-1,0,1};
+int offset[3] = {-1, 0, 1};
+
 int main(void)
 {
-	int n;
-	int board[3];
-	int maxDp[2][3]; //dp[1][i]: i번째 위치에 도착할 때 최대/최소 값
-	int minDp[2][3]; 
 
+	int n;
 	cin >> n;
+
+	//DP[i][j]: i열의 j번째 숫자를 가지는 최대/최소의 수.
+	//이때 메모리 제한에 의해 현재 및 다음 상태의 DP 테이블만 저장.
+	int minDP[2][3];
+	int maxDP[2][3];
+	int board[3];
 	for (int i = 0; i < 3; i++)
 	{
 		cin >> board[i];
-		maxDp[0][i] = minDp[0][i] = board[i];
+		minDP[0][i] = maxDP[0][i] = board[i];
 	}
 
-	//메모리 절약을 위해 입력 즉시 테이블 값 계산
-	for (int i = 1; i < n; i++)
+	for(int i=1; i<n; i++)
 	{
 		for (int j = 0; j < 3; j++)
+		{
 			cin >> board[j];
 
-		for (int j = 0; j < 3; j++)
-		{
-			int minNum = 0x3f3f3f3f;
-			int maxNum = 0;
-
-			//j번째 자리로 내려갈 수 있는 이전행의 수를 순회
-			for (int diff = 0; diff < 3; diff++)
+			//j번째 칸으로 내려올 수 있는 이전 층의 idx를 계산
+			// 해당되는 수 중 최소/최대 값을 판별
+			int mn = 0x3f3f3f3f;
+			int mx = 0;
+			for (int k = 0; k < 3; k++)
 			{
-				int idx = j + offset[diff];
-				if (idx < 0 || idx >= 3) continue;
-				minNum = min(minNum, minDp[0][idx]);
-				maxNum = max(maxNum, maxDp[0][idx]);
+				int idx = j + offset[k];
+				if(idx < 0 || idx >= 3) continue;
+				mn = min(mn, minDP[0][idx]);
+				mx = max(mx, maxDP[0][idx]);
 			}
-			//가장 큰/작은 수를 각각 dp 테이블에 합산
-			minDp[1][j] = board[j] + minNum;
-			maxDp[1][j] = board[j] + maxNum;
+			minDP[1][j] = mn + board[j];
+			maxDP[1][j] = mx + board[j];
 		}
-		//현재 테이블 값 이전으로 저장
+
+		//다음 상태를 현재 상태로 변경
 		for (int j = 0; j < 3; j++)
 		{
-			minDp[0][j] = minDp[1][j];
-			maxDp[0][j] = maxDp[1][j];
+			minDP[0][j] = minDP[1][j];
+			maxDP[0][j] = maxDP[1][j];
 		}
 	}
 
-	int maxAns = 0;
 	int minAns = 0x3f3f3f3f;
-	for (int i = 0; i < 3; i++)
+	int maxAns = 0;
+	for (int j = 0; j < 3; j++)
 	{
-		minAns = min(minAns, minDp[0][i]);
-		maxAns = max(maxAns, maxDp[0][i]);
+		maxAns = max(maxAns, maxDP[0][j]);
+		minAns = min(minAns, minDP[0][j]);
 	}
-	cout << maxAns << " " << minAns;
+	cout << maxAns << " " << minAns << "\n";
 	return 0;
 }
