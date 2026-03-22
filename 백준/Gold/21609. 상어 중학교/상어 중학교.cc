@@ -48,7 +48,7 @@ bool CheckMaxGroup(int maxSize, int maxRainbowNum, pair<int, int> maxGroupPivot,
 				if (maxGroupPivot.second < curPivot.second)
 					return true;
 			}
-			else if(maxGroupPivot.first < curPivot.first)\
+			else if(maxGroupPivot.first < curPivot.first)
 				return true;
 		}
 		else if(maxRainbowNum < curRainbowNum)
