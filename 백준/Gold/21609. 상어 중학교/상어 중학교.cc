@@ -1,97 +1,27 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 #include <queue>
 using namespace std;
 
 int dx[4] = { 0,1,0,-1 };
 int dy[4] = { 1,0,-1,0 };
-struct Group
-{
-	int rainbowNum = 0;
-	pair<int, int> pivot;
-	vector<pair<int, int>> blocks;
-	bool operator < (const Group& b) const
-	{
-		if (blocks.size() == b.blocks.size())
-		{
-			if (rainbowNum == b.rainbowNum)
-			{
-				if (pivot.first == b.pivot.first)
-					return pivot.second > b.pivot.second;
-				return pivot.first > b.pivot.first;
-			}
-			return rainbowNum > b.rainbowNum;
-		}
-		return blocks.size() > b.blocks.size();
-	}
-};
-
-void FindGroups(vector<Group>& groups, vector<vector<int>>& board, int n)
-{
-
-	vector<vector<bool>> vis(n, vector<bool>(n, false));
-
-	for (int i = 0; i < n; i++)
-	{
-		for (int j = 0; j < n; j++)
-		{
-			if (board[i][j] <= 0 || vis[i][j]) continue;
-
-			vector<vector<bool>> zeroVis(n, vector<bool>(n, false));
-			queue<pair<int, int>> q;
-			q.push({ i, j });
-			vis[i][j] = true;
-
-			Group g;
-			g.pivot = { i, j };
-			int pivotBlock = board[i][j];
-
-			while (!q.empty())
-			{
-				auto cur = q.front(); q.pop();
-
-				//그룹 정보 업데이트
-				if (board[cur.first][cur.second] == 0)
-					g.rainbowNum++;
-				g.blocks.push_back({ cur.first, cur.second });
-
-				for (int dir = 0; dir < 4; dir++)
-				{
-					int nx = cur.first + dx[dir];
-					int ny = cur.second + dy[dir];
-					if (nx < 0 || nx >= n || ny < 0 || ny >= n) continue;
-					if (board[nx][ny] < -1) continue;
-					if (board[nx][ny] == -1 || vis[nx][ny]) continue;
-					if (board[nx][ny] == 0 && zeroVis[nx][ny]) continue;
-					if (board[nx][ny] != 0 && board[nx][ny] != pivotBlock) continue;
-
-					q.push({ nx, ny });
-					if (board[nx][ny] == 0)
-						zeroVis[nx][ny] = true;
-					else
-						vis[nx][ny] = true;
-				}
-			}
-			if(g.blocks.size() > 1)
-				groups.push_back(g);
-		}
-	}
-}
 
 void Gravity(vector<vector<int>>& board, int n)
 {
-	for (int i = n - 1; i >= 0; i--)
+	for (int i = n - 2; i >= 0; i--)
 	{
 		for (int j = 0; j < n; j++)
 		{
 			if (board[i][j] < 0) continue;
-			int curNum = board[i][j];
-			int cx = i;
-			while (cx + 1 <= n - 1 && board[cx + 1][j] == -10)
-				cx += 1;
-			board[i][j] = -10;
-			board[cx][j] = curNum;
+			int nx = i;
+			while (nx < n - 1 && board[nx + 1][j] == -10)
+				nx += 1;
+
+			if (nx != i)
+			{
+				board[nx][j] = board[i][j];
+				board[i][j] = -10;
+			}
 		}
 	}
 }
@@ -107,6 +37,116 @@ void Rotate(vector<vector<int>>& board, int n)
 	board = nxtBoard;
 }
 
+bool CheckMaxGroup(int maxSize, int maxRainbowNum, pair<int, int> maxGroupPivot, int curSize, int curRainbowNum, pair<int, int> curPivot)
+{
+	if (maxSize == curSize)
+	{
+		if (maxRainbowNum == curRainbowNum)
+		{
+			if (maxGroupPivot.first == curPivot.first)
+			{
+				if (maxGroupPivot.second < curPivot.second)
+					return true;
+			}
+			else if(maxGroupPivot.first < curPivot.first)\
+				return true;
+		}
+		else if(maxRainbowNum < curRainbowNum)
+			return true;
+	}
+	else if(maxSize < curSize)
+		return true;
+
+	return false;
+}
+
+int BFS(vector<vector<int>>& board, int n)
+{
+	int maxSize = 0;
+	int maxRainbowNum = 0;
+	pair<int, int> maxGroupPivot;
+
+	//가장 큰 그룹 찾기
+	vector<vector<bool>> vis(n, vector<bool>(n, false));
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			if (vis[i][j] || board[i][j] <= 0) continue;
+			vector<vector<bool>> rainbowVis(n, vector<bool>(n, false));
+
+			queue<pair<int, int>> q;
+			vis[i][j] = true;
+			q.push({ i, j });
+			int curNum = board[i][j];
+			int curSize = 0;
+			int curRainbowNum = 0;
+
+			while (!q.empty())
+			{
+				auto cur = q.front(); q.pop();
+
+				curSize++;
+				if(board[cur.first][cur.second] == 0) curRainbowNum++;
+
+				for (int dir = 0; dir < 4; dir++)
+				{
+					int nx = cur.first + dx[dir];
+					int ny = cur.second + dy[dir];
+					if(nx < 0 || nx >= n || ny < 0 || ny >= n) continue;
+					if(board[nx][ny] < 0) continue;
+					if(vis[nx][ny] || rainbowVis[nx][ny]) continue;
+
+					if (board[nx][ny] == curNum)
+					{
+						vis[nx][ny] = true;
+						q.push({ nx, ny });
+					}
+					else if (board[nx][ny] == 0)
+					{
+						rainbowVis[nx][ny] = true;
+						q.push({ nx, ny });
+					}
+				}
+			}
+			if (CheckMaxGroup(maxSize, maxRainbowNum, maxGroupPivot, curSize, curRainbowNum, { i, j }))
+			{
+				maxSize = curSize;
+				maxRainbowNum = curRainbowNum;
+				maxGroupPivot = { i, j };
+			}
+		}
+	}
+	if(maxSize < 2) return 0;
+
+	//최대 그룹 지우기
+	vector<vector<bool>> vis2(n, vector<bool>(n, false));
+	queue<pair<int, int>> q;
+	vis2[maxGroupPivot.first][maxGroupPivot.second] = true;
+	q.push({ maxGroupPivot.first, maxGroupPivot.second });
+	int curNum = board[maxGroupPivot.first][maxGroupPivot.second];
+	while (!q.empty())
+	{
+		auto cur = q.front(); q.pop();
+		board[cur.first][cur.second] = -10;
+		for (int dir = 0; dir < 4; dir++)
+		{
+			int nx = cur.first + dx[dir];
+			int ny = cur.second + dy[dir];
+			if (nx < 0 || nx >= n || ny < 0 || ny >= n) continue;
+			if (board[nx][ny] < 0) continue;
+			if (vis2[nx][ny]) continue;
+
+			if (board[nx][ny] == curNum || board[nx][ny] == 0)
+			{
+				vis2[nx][ny] = true;
+				q.push({ nx, ny });
+			}
+		}
+	}
+	return maxSize * maxSize;
+}
+
 int main(void)
 {
 	int n, m;
@@ -119,22 +159,16 @@ int main(void)
 			cin >> board[i][j];
 	}
 
-	int score = 0;
+	int ans = 0;
 	while (true)
 	{
-		vector<Group> groups;
-		FindGroups(groups, board, n);
-		if (groups.empty()) break;
-
-		sort(groups.begin(), groups.end());
-		score += groups[0].blocks.size() * groups[0].blocks.size();
-		for (auto& b : groups[0].blocks)
-			board[b.first][b.second] = -10;
-
+		int res = BFS(board, n);
+		if(res == 0) break;
+		ans += res;
 		Gravity(board, n);
 		Rotate(board, n);
 		Gravity(board, n);
 	}
-	cout << score;
+	cout << ans;
 	return 0;
 }
