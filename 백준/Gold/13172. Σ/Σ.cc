@@ -3,50 +3,45 @@ using namespace std;
 
 typedef long long ll;
 
-const ll PRIME = 1'000'000'007;
+const int PRIME = 1'000'000'007;
 
-ll gcd(ll a, ll b)
+int gcd(int a, int b)
 {
-	if(b==0) return a;
-	return gcd(b, a%b);
+	if (b == 0) return a;
+	return gcd(b, a % b);
 }
 
-ll pow(ll num, ll exp)
+ll Pow(ll num, ll exp)
 {
-	if(exp == 0) return 1;
-	if(exp == 1) return num % PRIME;
+	if (exp == 0) return 1;
+	else if (exp == 1) return num;
 
+	ll half = Pow(num, exp / 2);
 	if (exp % 2 == 0)
-	{
-		ll half = pow(num, exp/2);
-		return (half * half) % PRIME;
-	}
+		return half * half % PRIME;
 	else
-	{
-		ll half = pow(num, (exp-1)/2);
-		return (((half * half) % PRIME) * num) % PRIME;
-	}
+		return ((half * half) % PRIME * num) % PRIME;
 }
 
 int main(void)
 {
+
 	int m;
 	cin >> m;
 
 	ll ans = 0;
 	while (m--)
 	{
-		ll n, s;
+		int n, s;
 		cin >> n >> s;
 
-		ll g = gcd(n, s);
+		//기약분수
+		int g = gcd(n, s);
+		n /= g;
+		s /= g;
 
-		n/=g;
-		s/=g;
-
-		ll invN = pow(n, PRIME-2) % PRIME;
-		ans += (s * invN) % PRIME;
-		ans %= PRIME;
+		ll invN = Pow(n, PRIME - 2) % PRIME;
+		ans = (ans + (s * invN) % PRIME) % PRIME;
 	}
 	cout << ans;
 	return 0;
