@@ -1,52 +1,50 @@
 #include <iostream>
+#include <vector>
 #include <algorithm>
 using namespace std;
 
-int n, m, l;
-int a[55];
-
-bool solve(int x)
+int check(int len, vector<int>& pos, int n)
 {
 	int cnt = 0;
-	int pre = 0;
-	for (int i = 0; i <= n; i++) {
-		int dist = a[i] - pre;
-
-		if (dist >= x) {
-			if (dist % x != 0)
-				cnt += dist / x;
-			else
-				cnt += (dist / x) - 1;
-		}
-		pre = a[i];
+	int curPos = 0;
+	for (int i = 0; i <= n; i++)
+	{
+		int dist = pos[i] - curPos;
+		cnt += (dist-1)/len;
+		curPos = pos[i];
 	}
-
-	if (cnt > m)
-		return true;
-	else
-		return false;
+	return cnt;
 }
 
 int main(void)
 {
-	cin.tie(0);
-	ios::sync_with_stdio(0);
-
+	int n, m, l;
 	cin >> n >> m >> l;
-	for (int i = 0; i < n; i++)
-		cin >> a[i];
-	sort(a, a + n);
 
-	a[n] = l;
-	int s = 1;
-	int e = l;
-	while (s < e) {
-		int m = (s + e) / 2;
-		if (solve(m))
-			s = m + 1;
-		else
-			e = m;
+	vector<int> pos;
+	for (int i = 0; i < n; i++)
+	{
+		int p;
+		cin >> p;
+		pos.push_back(p);
 	}
-	cout << s;
+	pos.push_back(l);
+	sort(pos.begin(), pos.end());
+
+	int ans = 0;
+	int st = 1;
+	int ed = l;
+	while (st <= ed)
+	{
+		int mid = st + (ed - st) / 2;
+		if (check(mid, pos, n) > m)
+			st = mid + 1;
+		else
+		{
+			ans = mid;
+			ed = mid - 1;
+		}
+	}
+	cout << ans;
 	return 0;
 }
