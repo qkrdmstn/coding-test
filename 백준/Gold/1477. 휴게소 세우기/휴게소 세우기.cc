@@ -10,7 +10,12 @@ int check(int len, vector<int>& pos, int n)
 	for (int i = 0; i <= n; i++)
 	{
 		int dist = pos[i] - curPos;
-		cnt += (dist-1)/len;
+		int num = dist / len;
+		for (int j = 1; j <= num; j++)
+		{
+			if (curPos + j * len >= pos[i]) continue;
+			cnt++;
+		}
 		curPos = pos[i];
 	}
 	return cnt;
