@@ -1,75 +1,75 @@
-#include <iostream>
-#include <string>
+#include<iostream>
+#include <vector>
 #include <queue>
 #include <tuple>
+#include <algorithm>
+#include <string>
 using namespace std;
 
-int n, m, k;
-string map[1001];
-queue<tuple<int, int, int, int>> q;
-int dist[1001][1001][11][2]; //0:낮, 1:밤
-int dx[4] = { 0,0,-1,1 };
-int dy[4] = { -1, 1, 0, 0 };
+int dx[4] = { 1,0,-1,0};
+int dy[4] = { 0,1,0,-1};
+string board[1000];
+int dist[1000][1000][11][2] = { -1, };
 
+int BFS(int n, int m, int k)
+{
+	queue<tuple<int, int, int, int>> q;
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+			for (int l = 0; l <= k; l++)
+				fill(dist[i][j][l], dist[i][j][l] + 2, -1);
+
+	q.push({ 0,0,k,0 });
+	dist[0][0][k][0] = 1;
+	while (!q.empty())
+	{
+		int cx, cy, ck, cd;
+		tie(cx, cy, ck, cd) = q.front(); q.pop();
+
+		if(cx == n-1 && cy == m-1) return dist[cx][cy][ck][cd];
+
+		for (int i = 0; i < 4; i++)
+		{
+			int nx = cx + dx[i];
+			int ny = cy + dy[i];
+			int nd = 1 - cd;
+			if(nx < 0 || nx >=n || ny < 0 || ny >= m) continue;
+
+			if (board[nx][ny] == '1' && ck > 0)
+			{
+				if (cd == 0)
+				{
+					int nk = ck - 1;
+					if (dist[nx][ny][nk][nd] >= 0) continue;
+					q.push({ nx, ny, nk, nd });
+					dist[nx][ny][nk][nd] = dist[cx][cy][ck][cd] + 1;
+				}
+				else
+				{
+					if (dist[cx][cy][ck][nd] >= 0) continue;
+					q.push({ cx, cy, ck, nd });
+					dist[cx][cy][ck][nd] = dist[cx][cy][ck][cd] + 1;
+				}
+			}
+			else if (board[nx][ny] == '0')
+			{
+				if(dist[nx][ny][ck][nd] >= 0) continue;
+				q.push({nx, ny, ck, nd});
+				dist[nx][ny][ck][nd] = dist[cx][cy][ck][cd] + 1;
+			}
+		}
+	}
+	return -1;
+}
 
 int main(void)
 {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
+	int n, m, k;
 
 	cin >> n >> m >> k;
-	for (int i = 0; i < n; i++) {
-		cin >> map[i];
-	}
+	for (int i = 0; i < n; i++)
+		cin >> board[i];
 
-	q.push({ 0,0, k, 0 });
-	dist[0][0][k][0] = 1;
-
-	while (!q.empty()) {
-		int curX, curY, curK, curT;
-		tie(curX, curY, curK, curT) = q.front();
-		q.pop();
-
-		if (curX == n - 1 && curY == m - 1) {
-			cout << dist[curX][curY][curK][curT];
-			return 0;
-		}
-
-		int nt = 1 - curT;
-		for (int dir = 0; dir < 4; dir++) {
-			int nx = curX + dx[dir];
-			int ny = curY + dy[dir];
-
-			if (nx < 0 || nx >= n || ny < 0 || ny >= m)
-				continue;
-			if (map[nx][ny] == '1') { //벽인 경우
-				if (curK == 0)
-					continue;
-
-				if (curT == 0) { //현재 낮이면
-					int nk = curK - 1;
-					if (dist[nx][ny][nk][nt] > 0)
-						continue;
-					q.push({ nx, ny, nk, nt });
-					dist[nx][ny][nk][nt] = dist[curX][curY][curK][curT] + 1;
-				}
-				else  { //밤이면 제자리에 머무르기
-					int nk = curK;
-					if (dist[curX][curY][nk][nt] > 0)
-						continue;
-					q.push({ curX, curY, nk, nt });
-					dist[curX][curY][nk][nt] = dist[curX][curY][curK][curT] + 1;
-				}
-			}
-			else {
-				int nk = curK;
-				if (dist[nx][ny][nk][nt] > 0)
-					continue;
-				q.push({ nx, ny, nk, nt });
-				dist[nx][ny][nk][nt] = dist[curX][curY][curK][curT] + 1;
-			}
-		}
-	}
-	cout << -1;
+	cout << BFS(n, m, k);
 	return 0;
 }
