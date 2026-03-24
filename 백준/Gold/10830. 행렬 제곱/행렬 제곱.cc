@@ -24,19 +24,12 @@ Mat Product(Mat a, Mat b, int n)
 
 Mat Pow(Mat m, ll exp, int n)
 {
-	if(exp == 1) return m;
-	
+	if (exp == 1) return m;
+	Mat half = Pow(m, exp / 2, n);
 	if (exp % 2 == 0)
-	{
-		Mat half = Pow(m, exp / 2, n);
 		return Product(half, half, n);
-	}
 	else
-	{
-		Mat half = Pow(m, (exp - 1) / 2, n);
-		Mat tmp = Product(half, half, n);
-		return Product(tmp, m, n);
-	}
+		return Product(Product(half, half, n), m, n);
 }
 
 int main(void)
@@ -60,7 +53,7 @@ int main(void)
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < n; j++)
-			cout << res[i][j]<< " ";
+			cout << res[i][j] << " ";
 		cout << "\n";
 	}
 	return 0;
