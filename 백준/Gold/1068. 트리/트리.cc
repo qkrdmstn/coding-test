@@ -1,45 +1,49 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <tuple>
 using namespace std;
 
-int n, delNode, root, ans;
-vector<int> c[55];
-
-void bfs()
+int BFS(vector<vector<int>>& tree, int root, int rmv, int n)
 {
-	if (root == delNode) return;
+	int ans = 0;
 	queue<int> q;
+	vector<bool> vis(n, false);
+
 	q.push(root);
-	while (!q.empty()) {
-		int cur = q.front();
-		q.pop();
-		bool isLeaf = true;
-		for (int child : c[cur]) {
-			if (child == delNode) continue;
-			isLeaf = false;
-			q.push(child);
+	vis[root] = true;
+	while (!q.empty())
+	{
+		int cur = q.front(); q.pop();
+		int cnt = 0;
+		for (auto nxt : tree[cur])
+		{
+			if(nxt == rmv || vis[nxt]) continue;
+			cnt++;
+			q.push(nxt);
+			vis[nxt] = true;
 		}
-		if (isLeaf) ans++;
+		if(cnt == 0) ans++;
 	}
+	return ans;
 }
 
 int main(void)
 {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-
+	int n, root, rmv;
 	cin >> n;
+	vector<vector<int>> tree(n, vector<int>());
+	for (int i = 0; i < n; i++)
+	{
+		int p;
+		cin >> p;
+		if(p == -1)
+			root = i;
+		else
+			tree[p].push_back(i);
+	}	
+	cin >> rmv;
 
-	for (int i = 0; i < n; i++) {
-		int p; cin >> p;
-		if (p == -1) { root = i; continue; }
-		c[p].push_back(i);
-	}
-
-	cin >> delNode;
-	bfs();
-	cout << ans;
+	if(root == rmv) cout << 0;
+	else cout << BFS(tree, root, rmv, n);
 	return 0;
 }
