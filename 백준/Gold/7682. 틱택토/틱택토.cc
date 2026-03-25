@@ -57,12 +57,11 @@ bool Check(string s)
 		else if (s[2] == 'O') oWin = true;
 	}
 
-	if (xWin && oWin) return false;
-	if (!xWin && !oWin && xCnt + oCnt != 9) return false;
-	if (xWin && xCnt != oCnt + 1) return false;
-	if (oWin && xCnt != oCnt) return false;
+	if (xWin && !oWin && xCnt == oCnt + 1) return true;
+	if (oWin && !xWin && xCnt == oCnt) return true;
+	if (!xWin && !oWin && xCnt == 5 && oCnt == 4) return true;
 
-	return true;
+	return false;
 }
 
 int main(void)
