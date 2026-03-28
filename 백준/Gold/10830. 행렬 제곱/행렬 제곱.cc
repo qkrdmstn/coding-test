@@ -8,53 +8,55 @@ const int MOD = 1000;
 
 Mat Product(Mat a, Mat b, int n)
 {
-	Mat res(n, vector<ll>(n));
-	for (int k = 0; k < n; k++)
+	Mat r(n, vector<ll>(n));
+	for (int i = 0; i < n; i++)
 	{
-		for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
 		{
-			for (int j = 0; j < n; j++)
-			{
-				res[i][j] = (res[i][j] + (a[i][k] * b[k][j]) % MOD) % MOD;
-			}
+			for (int k = 0; k < n; k++)
+				r[i][j] = (r[i][j] + (a[i][k] * b[k][j]) % MOD) % MOD;
 		}
 	}
-	return res;
+	return r;
 }
 
-Mat Pow(Mat m, ll exp, int n)
+Mat Pow(Mat a, ll exp, int n)
 {
-	if (exp == 1) return m;
-	Mat half = Pow(m, exp / 2, n);
+	if(exp == 1) return a;
+	Mat half = Pow(a, exp/2, n);
 	if (exp % 2 == 0)
 		return Product(half, half, n);
 	else
-		return Product(Product(half, half, n), m, n);
+	{
+		Mat tmp = Product(half, half, n);
+		return Product(tmp, a, n);
+	}
 }
 
 int main(void)
 {
 	int n;
-	ll b;
-	cin >> n >> b;
+	ll exp;
+	cin >> n >> exp;
 
-	Mat m(n, vector<ll>(n));
+	Mat a(n, vector<ll>(n));
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < n; j++)
 		{
-			int num;
-			cin >> num;
-			m[i][j] = num % MOD;
+			cin >> a[i][j];
+			a[i][j] %= MOD;
 		}
 	}
 
-	Mat res = Pow(m, b, n);
+	Mat res = Pow(a, exp, n);
 	for (int i = 0; i < n; i++)
 	{
-		for (int j = 0; j < n; j++)
+		for(int j=0; j<n; j++)
 			cout << res[i][j] << " ";
 		cout << "\n";
 	}
+
+
 	return 0;
 }
