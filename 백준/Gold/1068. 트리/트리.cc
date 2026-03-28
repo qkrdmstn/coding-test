@@ -1,49 +1,60 @@
 #include <iostream>
-#include <vector>
 #include <queue>
+#include <vector>
 using namespace std;
 
-int BFS(vector<vector<int>>& tree, int root, int rmv, int n)
-{
-	int ans = 0;
-	queue<int> q;
-	vector<bool> vis(n, false);
+vector<int> e[50];
 
-	q.push(root);
-	vis[root] = true;
+int BFS(int start, int remove)
+{
+	int leafNode = 0;
+	queue<int> q;
+	bool vis[51] = {false};
+
+	if(start == remove) return 0;
+
+	q.push(start);
+	vis[start] = true;
+
 	while (!q.empty())
 	{
 		int cur = q.front(); q.pop();
+        
 		int cnt = 0;
-		for (auto nxt : tree[cur])
+		for (auto& nxt : e[cur])
 		{
-			if(nxt == rmv || vis[nxt]) continue;
-			cnt++;
+			if(vis[nxt] || nxt == remove) continue;
 			q.push(nxt);
 			vis[nxt] = true;
+			cnt++;
 		}
-		if(cnt == 0) ans++;
+        //진행할 노드가 없으면 leafNode
+		if(cnt == 0) leafNode++;
 	}
-	return ans;
+
+	return leafNode;
 }
 
 int main(void)
 {
-	int n, root, rmv;
+	cin.tie(0);
+	ios::sync_with_stdio(0);
+
+	int n;
 	cin >> n;
-	vector<vector<int>> tree(n, vector<int>());
+
+	int root, remove;
 	for (int i = 0; i < n; i++)
 	{
-		int p;
-		cin >> p;
-		if(p == -1)
-			root = i;
-		else
-			tree[p].push_back(i);
-	}	
-	cin >> rmv;
+		int num;
+		cin >> num;
+		if(num == -1) root = i;
+		else e[num].push_back(i);
+	}
 
-	if(root == rmv) cout << 0;
-	else cout << BFS(tree, root, rmv, n);
+	cin >> remove;
+	cout << BFS(root, remove);
+
+
 	return 0;
 }
