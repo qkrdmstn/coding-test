@@ -5,12 +5,10 @@ using namespace std;
 
 int main(void)
 {
-	cin.tie(0);
-	ios::sync_with_stdio(0);
-
 	int n;
 	cin >> n;
 
+	//A 전봇대 기준으로 정렬 후, B 전봇대가 증가하는 수열이면 교차 X
 	vector<pair<int, int>> line;
 	for (int i = 0; i < n; i++)
 	{
@@ -20,8 +18,8 @@ int main(void)
 	}
 	sort(line.begin(), line.end());
 
+	//dp: B전봇대와 연결된 전깃줄의 위치를 기준으로 가장 긴 증가하는 부분 수열의 크기
 	vector<int> dp(n, 1);
-	dp[0] = 1;
 	for (int i = 1; i < n; i++)
 	{
 		for (int j = 0; j < i; j++)
@@ -31,9 +29,11 @@ int main(void)
 		}
 	}
 
+	//ans: 교차되지 않은 가장 많은 전깃줄
 	int ans = 0;
-	for(int i=0; i<n; i++)
-		ans = max(ans, dp[i]);
+	for (int i = 0; i < n; i++)
+	{
+		ans = max(dp[i], ans);
+	}
 	cout << n - ans;
-	return 0;
 }
