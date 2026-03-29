@@ -1,128 +1,119 @@
 #include <iostream>
-#include <queue>
 #include <vector>
-#include <tuple>
+#include <queue>
 using namespace std;
-
-int r, c, k, w;
-int board[25][25];
-bool wall[25][25][4] = { false };
-
-//방향: 우좌상하
-int dx[4] = { 0,0,-1,1 };
-int dy[4] = { 1,-1,0,0 };
 
 struct Machine
 {
 	int x, y, dir;
 };
+int r, c, k;
+int dx[4] = { 0, 0, -1, 1 };
+int dy[4] = { 1, -1, 0, 0 };
+int board[25][25];
+bool isWall[25][25][4];
+vector<Machine> m;
+vector<pair<int, int>> pos;
 
-vector<Machine> machines;
-vector<pair<int, int>> targets;
-
-void Blow(Machine m)
+void BFS(Machine m)
 {
-	bool vis[25][25] = { false };
-	queue<tuple<int, int, int>> q;
+	queue<pair<int, int>> q;
+	int dist[25][25];
+	for (int i = 1; i <= r; i++)
+		fill(dist[i], dist[i] + c + 1, -1);
 
-	int nx = m.x + dx[m.dir];
-	int ny = m.y + dy[m.dir];
-	if (nx < 1 || nx > r || ny < 1 || ny > c) return;
-
-	q.push({ nx, ny, 5 });
-	vis[nx][ny] = true;
+	int cx = m.x + dx[m.dir];
+	int cy = m.y + dy[m.dir];
+	q.push({ cx, cy });
+	dist[cx][cy] = 0;
 
 	while (!q.empty())
 	{
-		int cx, cy, tmp;
-		tie(cx, cy, tmp) = q.front(); q.pop();
+		auto cur = q.front(); q.pop();
 
-		board[cx][cy] += tmp;
-		if (tmp == 1) continue;
+		if (dist[cur.first][cur.second] >= 5) continue;
+		else board[cur.first][cur.second] += 5 - dist[cur.first][cur.second];
 
-		int nx1 = cx + dx[m.dir];
-		int ny1 = cy + dy[m.dir];
-		if (nx1 >= 1 && nx1 <= r && ny1 >= 1 && ny1 <= c && !vis[nx1][ny1])
+		int nx1 = cur.first + dx[m.dir], ny1 = cur.second + dy[m.dir];
+		if (nx1 >= 1 && nx1 <= r && ny1 >= 1 && ny1 <= c && dist[nx1][ny1] < 0)
 		{
-			if (!wall[cx][cy][m.dir])
+			if (!isWall[cur.first][cur.second][m.dir])
 			{
-				vis[nx1][ny1] = true;
-				q.push({ nx1, ny1, tmp - 1 });
+				q.push({nx1, ny1});
+				dist[nx1][ny1] = dist[cur.first][cur.second] + 1;
 			}
 		}
 
-		int sideDirs[2];
-		if (m.dir == 0 || m.dir == 1) { sideDirs[0] = 2; sideDirs[1] = 3; }
-		else { sideDirs[0] = 0; sideDirs[1] = 1; }
-
+		int sideDir[2];
+		if(m.dir <= 1) { sideDir[0] = 2, sideDir[1] = 3; }
+		else { sideDir[0] = 0, sideDir[1] = 1; }
 		for (int i = 0; i < 2; i++)
 		{
-			int sDir = sideDirs[i];
-
-			int mx = cx + dx[sDir];
-			int my = cy + dy[sDir];
+			int sDir = sideDir[i];
+			int mx = cur.first + dx[sDir];
+			int my = cur.second + dy[sDir];
 
 			int nx2 = mx + dx[m.dir];
 			int ny2 = my + dy[m.dir];
 
-			if (nx2 >= 1 && nx2 <= r && ny2 >= 1 && ny2 <= c && !vis[nx2][ny2])
-			{
-				if (!wall[cx][cy][sDir] && !wall[mx][my][m.dir])
-				{
-					vis[nx2][ny2] = true;
-					q.push({ nx2, ny2, tmp - 1 });
-				}
-			}
+			if(nx2 < 1 || nx2 > r || ny2 < 1 || ny2 > c) continue;
+			if(dist[nx2][ny2] >= 0) continue;
+			if(isWall[cur.first][cur.second][sDir] || isWall[mx][my][m.dir]) continue;
+
+			q.push({nx2, ny2});
+			dist[nx2][ny2] = dist[cur.first][cur.second] + 1;
 		}
 	}
 }
 
 void Adjust()
 {
-	int nxtBoard[25][25] = {0};
-
+	int nxtBoard[25][25] = { 0, };
 	for (int i = 1; i <= r; i++)
 	{
 		for (int j = 1; j <= c; j++)
 		{
-			for (int d = 0; d < 4; d++)
+			for (int dir = 0; dir < 4; dir++)
 			{
-				int nx = i + dx[d];
-				int ny = j + dy[d];
-
-				if (nx >= 1 && nx <= r && ny >= 1 && ny <= c)
+				int nx = i + dx[dir], ny = j + dy[dir];
+				if(nx < 1 || nx > r || ny < 1  || ny > c) continue;
+				if (!isWall[i][j][dir] && board[i][j] > board[nx][ny])
 				{
-					if (!wall[i][j][d] && board[i][j] > board[nx][ny])
-					{
-						int diff = (board[i][j] - board[nx][ny]) / 4;
-						nxtBoard[i][j] -= diff;
-						nxtBoard[nx][ny] += diff;
-					}
+					int diff = board[i][j] - board[nx][ny];
+					nxtBoard[nx][ny] += diff/4;
+					nxtBoard[i][j] -= diff/4;
 				}
 			}
 		}
 	}
 
-	for (int i = 1; i <= r; i++) {
-		for (int j = 1; j <= c; j++) {
+	for (int i = 1; i <= r; i++)
+	{
+		for (int j = 1; j <= c; j++)
 			board[i][j] += nxtBoard[i][j];
-		}
 	}
 }
 
-void DecreaseEdge() {
-	for (int i = 1; i <= r; i++) {
-		for (int j = 1; j <= c; j++) {
-			if (i == 1 || i == r || j == 1 || j == c) {
-				if (board[i][j] > 0) board[i][j]--;
+void Edge()
+{
+	for (int i = 1; i <= r; i++)
+	{
+		for (int j = 1; j <= c; j++)
+		{
+			if (i == 1 || i == r || j == 1 || j == c)
+			{
+				if(board[i][j] >= 1)
+					board[i][j]--;
 			}
 		}
 	}
 }
 
-bool CheckTargets() {
-	for (auto t : targets) {
-		if (board[t.first][t.second] < k) return false;
+bool Check()
+{
+	for (auto& p : pos)
+	{
+		if(board[p.first][p.second] < k) return false;
 	}
 	return true;
 }
@@ -130,45 +121,48 @@ bool CheckTargets() {
 int main(void)
 {
 	cin >> r >> c >> k;
+
 	for (int i = 1; i <= r; i++)
 	{
 		for (int j = 1; j <= c; j++)
 		{
-			int val; cin >> val;
-			if (val >= 1 && val <= 4)
-				machines.push_back({ i, j, val - 1 });
-			else if (val == 5)
-				targets.push_back({ i, j });
+			cin >> board[i][j];
+			if (board[i][j] >= 1 && board[i][j] <= 4)
+				m.push_back({ i, j, board[i][j] - 1 });
+			else if (board[i][j] == 5)
+				pos.push_back({ i, j });
+			board[i][j] = 0;
 		}
 	}
 
+	int w;
 	cin >> w;
 	for (int i = 0; i < w; i++)
 	{
-		int x, y, t; cin >> x >> y >> t;
+		int x, y, t;
+		cin >> x >> y >> t;
 		if (t == 0)
 		{
-			wall[x][y][2] = true;
-			wall[x - 1][y][3] = true;
+			isWall[x][y][2] = true;
+			isWall[x-1][y][3] = true;
 		}
 		else
 		{
-			wall[x][y][0] = true;
-			wall[x][y + 1][1] = true;
+			isWall[x][y][0] = true;
+			isWall[x][y+1][1] = true;
 		}
 	}
 
-	int ans = 0;
-	while (ans <= 100) {
-		for (auto m : machines) Blow(m);
+	int turn = 0;
+	while (turn <= 100)
+	{
+		for(auto &machine: m)
+			BFS(machine);
+
 		Adjust();
-		DecreaseEdge();
-		ans++;
-		if (CheckTargets()) break;
+		Edge();
+		turn++;
+		if(Check()) break;
 	}
-
-	if (ans > 100) cout << 101 << "\n";
-	else cout << ans << "\n";
-
-	return 0;
+	cout << turn;
 }
