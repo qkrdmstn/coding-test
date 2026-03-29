@@ -3,16 +3,15 @@
 #include <tuple>
 using namespace std;
 
+const int INF = 0x3f3f3f3f;
 typedef long long ll;
-const ll INF = 0x3f3f3f3f;
+
 int main(void)
 {
-
 	int n, m;
 	cin >> n >> m;
-	vector<tuple<int, int, int>> edge;
-	vector<ll> dist(n+1, INF);
 
+	vector<tuple<int, int, int>> edge;
 	for (int i = 0; i < m; i++)
 	{
 		int a, b, c;
@@ -20,25 +19,28 @@ int main(void)
 		edge.push_back({a, b, c});
 	}
 
+	vector<ll> dist(n+1, INF);
 	dist[1] = 0;
-	for (int i = 1; i <= n; i++)
-	{
-		for (auto &e : edge)
-		{
-			int a, b, c;
-			tie(a, b, c) = e;
 
-			if(dist[a] != INF && dist[a] + c < dist[b])
-				dist[b] = dist[a] + c;
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			int from, to, cost;
+			tie(from, to, cost) = edge[j];
+
+			if(dist[from] != INF && dist[from] + cost < dist[to])
+				dist[to] = dist[from] + cost;
 		}
 	}
 
-	for (auto& e : edge)
-	{
-		int a, b, c;
-		tie(a, b, c) = e;
 
-		if (dist[a] != INF && dist[a] + c < dist[b])
+	for (int j = 0; j < m; j++)
+	{
+		int from, to, cost;
+		tie(from, to, cost) = edge[j];
+
+		if (dist[from] != INF && dist[from] + cost < dist[to])
 		{
 			cout << -1;
 			return 0;
