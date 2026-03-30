@@ -4,7 +4,7 @@ using namespace std;
 
 int dx[4] = { 0,1,0,-1 };
 int dy[4] = { -1,0,1,0 };
-float ratio[12] = { 0.01, 0, 0.01, 0.02, 0.07, 0, 0.07, 0.02, 0.1, 0, 0.1, 0.05 };
+int ratio[12] = { 1, 0, 1, 2, 7, 0, 7, 2, 10, 0, 10, 5 };
 
 //모래 비율별로 나누기
 int Wind(int x, int y, int targetX, int targetY, int dir, vector<vector<int>>& board, int n)
@@ -28,7 +28,7 @@ int Wind(int x, int y, int targetX, int targetY, int dir, vector<vector<int>>& b
 			int ny = cy + dy[sDir] * k;
 
 			//바깥으로 나간 모래
-			int ratioSand = totalSand * ratio[ratioIdx];
+			int ratioSand = (totalSand * ratio[ratioIdx]) / 100;
 			if (nx < 0 || nx >= n || ny < 0 || ny >= n)
 				ans += ratioSand;
 			else
