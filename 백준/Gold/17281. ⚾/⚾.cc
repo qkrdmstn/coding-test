@@ -14,29 +14,40 @@ int Play(vector<int>& order)
 
 	for (int rnd = 0; rnd < n; rnd++)
 	{
-		queue<int> q;
-
 		int out = 0;
+		int b1 = 0, b2 = 0, b3 = 0;
 		while (out < 3)
 		{
 			int player = order[cur];
 			int hit = info[rnd][player];
 			if (hit == 0)
 				out++;
-			else
+			else if (hit == 1)
 			{
-				q.push(order[cur]);
-				for (int i = 1; i < hit; i++)
-					q.push(-1);
-				while (q.size() > 3)
-				{
-					if (q.front() != -1)
-						score++;
-					q.pop();
-				}
+				score += b3;
+				b3 = b2;
+				b2 = b1;
+				b1 = 1;
 			}
-			cur++;
-			cur %= 9;
+			else if (hit == 2)
+			{
+				score += b3 + b2;
+				b3 = b1;
+				b2 = 1;
+				b1 = 0;
+			}
+			else if (hit == 3)
+			{
+				score += b3 + b2 + b1;
+				b3 = 1;
+				b2 = b1 = 0;
+			}
+			else if (hit == 4)
+			{
+				score += b3 + b2 + b1 + 1;
+				b3 = b2 = b1 = 0;
+			}
+			cur = (cur + 1) % 9;
 		}
 	}
 	return score;
@@ -58,30 +69,32 @@ void DFS(vector<bool>& vis, vector<int>& res)
 		res.pop_back();
 		return;
 	}
-	
-	for (int i = 1; i < 9; i++)
+
+	for (int i = 0; i < 9; i++)
 	{
-		if(vis[i]) continue;
+		if (i == 0 || vis[i]) continue;
 		vis[i] = true;
 		res.push_back(i);
 		DFS(vis, res);
 		res.pop_back();
-		vis[i] =  false;
+		vis[i] = false;
 	}
 }
 
 int main(void)
 {
+	ios::sync_with_stdio(false);
+	cin.tie(NULL);
+
 	cin >> n;
 	for (int i = 0; i < n; i++)
 	{
-		for(int j=0; j<9; j++)
+		for (int j = 0; j < 9; j++)
 			cin >> info[i][j];
 	}
 
 	vector<bool> vis(9, false);
 	vector<int> res;
-	vis[0] = true;
 	DFS(vis, res);
 	cout << ans;
 	return 0;
