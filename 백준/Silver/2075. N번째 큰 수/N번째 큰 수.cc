@@ -1,27 +1,20 @@
 #include <iostream>
-#include <queue>
+#include <vector>
+#include <algorithm>
 using namespace std;
-
-int n;
-priority_queue<int, vector<int>, greater<int>> pq;
 
 int main(void)
 {
-	ios::sync_with_stdio(0);
 	cin.tie(0);
+	ios::sync_with_stdio(0);
 
+	int n;
 	cin >> n;
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			int num;
-			cin >> num;
-			pq.push(num);
-			if ((int)pq.size() > n)
-				pq.pop();
-		}
-	}
 
-	cout << pq.top() << '\n';
-	return 0;
+	vector<int> arr(n*n);
+	for (int i = 0; i < n * n; i++)
+		cin >> arr[i];
 
+	sort(arr.begin(), arr.end(), greater<int>());
+	cout << arr[n-1];
 }
