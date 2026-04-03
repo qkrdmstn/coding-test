@@ -1,50 +1,50 @@
 #include <iostream>
 #include <vector>
-#include <queue>
+#include <tuple>
 using namespace std;
 
-int n, m, treeCnt;
-vector<int> adj[100'005];
-bool vis[100'005];
+int find(int x, vector<int>& p)
+{
+	if (p[x] == -1) return x;
+	return p[x] = find(p[x], p);
+}
+
+bool uni(int u, int v, vector<int>& p)
+{
+	u = find(u, p), v = find(v, p);
+	if(u == v) return false;
+	p[u] = v;
+	return true;
+}
 
 int main(void)
 {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-
+	int n, m;
 	cin >> n >> m;
-	for (int i = 0; i < m; i++) {
-		int u, v; cin >> u >> v;
-		adj[u].push_back(v);
-		adj[v].push_back(u);
+	
+	vector<tuple<int, int>> edge(m);
+	vector<int> p(n+1, -1);
+	for (int i = 0; i < m; i++)
+	{
+		int a, b;
+		cin >> a >> b;
+		edge[i] = {a, b};
 	}
 
-	for (int i = 1; i <= n; i++) {
-		if (vis[i]) continue;
-		queue<int> q;
-		q.push(i);
-		vis[i] = true;
-		while (!q.empty()) {
-			int cur = q.front();
-			q.pop();
+	int cut = 0, connect = 0;
+	// 1. 유니온파인드로 사이클이 생기는 시냅스를 끊는다.
+	for (auto& e : edge)
+	{
+		int a, b;
+		tie(a, b) = e;
 
-			for (auto nxt : adj[cur]) {
-				if (vis[nxt]) continue;
-				q.push(nxt);
-				vis[nxt] = true;
-			}
-		}
-		treeCnt++;
+		
+		if (!uni(a, b, p))
+			cut++;
 	}
-
-	cout << (treeCnt - 1) + (m + treeCnt - 1) - (n - 1);
-
-	/*
-	그래프에 tree 그룹의 개수를 센 뒤, 각 그룹을 연결(treeCnt-1)한다.
-	이후 현재 그래프의 간선 개수(=m+treeCnt-1)를 트리의 특성에 의해 n-1개로 맞춰야 한다.
-	즉, (m + treeCnt - 1) - (n - 1)개의 간선을 제거한다.
-	최종적으로 각 그룹을 연결(treeCnt - 1) + 간선 제거(m + treeCnt - 1) - (n - 1)의 횟수가
-	소요된다.
-	*/
+	// 2. 트리를 만드는 데에 필요한 간선의 수는 n-1개이므로,
+	// n-1 - 남은 간선을 통해 연결할 간선의 수를 정한다.
+ 	connect = (n-1) - (m-cut);
+	cout << cut + connect;
 	return 0;
 }
