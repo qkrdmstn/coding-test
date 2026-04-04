@@ -36,8 +36,11 @@ int main(void)
 	}
 
 	vector<vector<int>> sortedSpace(space);
-	for(int i=0; i<m; i++)
+	for (int i = 0; i < m; i++)
+	{
 		sort(sortedSpace[i].begin(), sortedSpace[i].end());
+		sortedSpace[i].erase(unique(sortedSpace[i].begin(), sortedSpace[i].end()), sortedSpace[i].end());
+	}
 
 	for (int i = 0; i < m; i++)
 	{
