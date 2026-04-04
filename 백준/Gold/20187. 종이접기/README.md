@@ -4,7 +4,7 @@
 
 ### 성능 요약
 
-메모리: 2548 KB, 시간: 8 ms
+메모리: 2288 KB, 시간: 8 ms
 
 ### 분류
 
@@ -12,7 +12,7 @@
 
 ### 제출 일자
 
-2026년 3월 31일 17:55:13
+2026년 4월 4일 16:15:21
 
 ### 문제 설명
 
@@ -48,7 +48,7 @@
 
 <p>구멍을 낸 후 접은 순서의 역순으로 종이를 펼치면, 종이에 2<sup>2k</sup>개의 구멍이 있게 된다. 예를 들어, 한 변의 길이가 4(= 2<sup>2</sup>)인 정사각형을 <<code>R</code>, <code>D</code>, <code>D</code>, <code>R</code>>순서대로 접은 후, 3번 위치에 구멍을 낸 다음 종이를 펼치면 아래 그림처럼 구멍이 나게 된다.</p>
 
-<p style="text-align: center;"><img alt="" src="https://upload.acmicpc.net/f33749e3-7332-4ed4-925b-f81cb36060b1/-/preview/" style="width: 152px; height: 153px;"></p>
+<p style="text-align: center;"><img alt="" src="" style="width: 152px; height: 153px;"></p>
 
 <p>종이의 크기를 나타내는 정수 k, 종이를 접는 순서를 나타내는 정보, 구멍 뚫는 위치를 나타내는 정수가 주어질 때, 2<sup>k</sup> × 2<sup>k</sup> 격자에 뚫린 구멍의 위치를 출력하는 프로그램을 작성하시오.</p>
 

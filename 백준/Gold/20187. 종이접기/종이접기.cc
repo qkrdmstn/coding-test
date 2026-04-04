@@ -2,89 +2,100 @@
 #include <vector>
 using namespace std;
 
-int standard[2][2] = { {0, 1}, {2, 3} };
+int k, hole;
+vector<char> operation;
+
+int VerticalFold(int cur)
+{
+	return (cur + 2) % 4;
+}
+
+int HorizontalFold(int cur)
+{
+	if (cur >= 2)
+		return (cur + 1) % 2 + 2;
+	else
+		return (cur + 1) % 2;
+}
+
 int main(void)
 {
-	int k, hole;
 	cin >> k;
-	vector<char> op(2 * k);
 	for (int i = 0; i < 2 * k; i++)
-		cin >> op[i];
-	cin >> hole;
-
-	pair<int, int> initPos;
-	if (hole == 0)
-		initPos = { 0,0 };
-	else if (hole == 1)
-		initPos = { 0,1 };
-	else if (hole == 2)
-		initPos = { 1,0 };
-	else
-		initPos = { 1,1 };
-
-	int n = 1 << k;
-	vector<vector<pair<int, int>>> board(n + 1, vector<pair<int, int>>(n + 1, initPos));
-	for (int i = 0; i < n; i++)
 	{
-		for (int j = 0; j < n; j++)
-		{
-			int curXSize = n;
-			int curYSize = n;
-			int cx = i, cy = j;
+		char op;
+		cin >> op;
+		operation.push_back(op);
+	}
 
-			for (auto& o : op)
+	cin >> hole;
+	int size = 1 << k;
+	vector<vector<int>> paper(size, vector<int>(size, hole));
+
+	for (int i = 0; i < size; i++)
+	{
+		for (int j = 0; j < size; j++)
+		{
+			int x = i, y = j;
+			int curXSize = size;
+			int curYSize = size;
+
+			for (auto& op : operation)
 			{
-				if (o == 'U')
+				if (op == 'U')
 				{
-					if (curXSize / 2 <= cx)
+					//아래 절반이라면,
+					if (x >= curXSize / 2)
 					{
-						board[i][j].first = 1 - board[i][j].first;
-						cx = curXSize - 1 - cx;
+						paper[i][j] = VerticalFold(paper[i][j]);
+						x = curXSize - 1 - x;
 					}
 					curXSize /= 2;
 				}
-				else if (o == 'D')
+				else if (op == 'D')
 				{
-					if (curXSize / 2 > cx)
+					//위 절반이라면,
+					if (x  < curXSize / 2 )
 					{
-						board[i][j].first = 1 - board[i][j].first;
-						cx = curXSize - 1 - cx;
+						paper[i][j] = VerticalFold(paper[i][j]);
+						x = curXSize - 1 - x;
 					}
 					curXSize /= 2;
-					cx -= curXSize;
+					x -= curXSize; //모든 좌표 정규화
 				}
-				else if (o == 'L')
+				else if (op == 'L')
 				{
-					if (curYSize / 2 <= cy)
+					//오른쪽 절반이라면,
+					if (y >= curYSize / 2)
 					{
-						board[i][j].second = 1 - board[i][j].second;
-						cy = curYSize - 1 - cy;
+						paper[i][j] = HorizontalFold(paper[i][j]);
+						y = curYSize - 1 - y;
 					}
 					curYSize /= 2;
 				}
-				else if (o == 'R')
+				else if (op == 'R')
 				{
-					if (curYSize / 2 > cy)
+					//왼쪽 절반이라면,
+					if (y < curYSize / 2)
 					{
-						board[i][j].second = 1 - board[i][j].second;
-						cy = curYSize - 1 - cy;
+						paper[i][j] = HorizontalFold(paper[i][j]);
+						y = curYSize - 1 - y;
 					}
 					curYSize /= 2;
-					cy -= curYSize;
+					y -= curYSize; //모든 좌표 정규화
 				}
 			}
 		}
 	}
 
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < size; i++)
 	{
-		for (int j = 0; j < n; j++)
+		for (int j = 0; j < size; j++)
 		{
-			int x = board[i][j].first;
-			int y = board[i][j].second;
-			cout << standard[x][y] << " ";
+			cout << paper[i][j] << " ";
 		}
 		cout << "\n";
 	}
+
 	return 0;
 }
