@@ -3,7 +3,7 @@
 #include <algorithm>
 using namespace std;
 
-int LowerBound(int x, vector<int> arr)
+int LowerBound(int x, vector<int>& arr)
 {
 	int st = 0;
 	int ed = arr.size() - 1;
