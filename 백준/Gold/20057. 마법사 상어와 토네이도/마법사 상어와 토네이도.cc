@@ -1,89 +1,58 @@
-#include <queue>
 #include <iostream>
+#include <vector>
 using namespace std;
 
 int dx[4] = { 0,1,0,-1 };
 int dy[4] = { -1,0,1,0 };
-int ratio[12] = { 1, 0, 1, 2, 7, 0, 7, 2, 10, 0, 10, 5 };
+int r[12] = { 1,0,1,2,7,0,7,2,10,0,10,5 };
+int d[4] = {1, 2, 1, 0};
 
-//모래 비율별로 나누기
-int Wind(int x, int y, int targetX, int targetY, int dir, vector<vector<int>>& board, int n)
+bool IsBounded(int x, int y, int n)
 {
-	int sDir;
-	//이동 방향의 수직 방향 설정
-	if (dir == 0 || dir == 2) { sDir = 1; }
-	else { sDir= 0; }
-
-	int ratioIdx = 0;
-	int sideDist[4] = { 1,2,1,0 };
-	int cx = x, cy = y;
-
-	int totalSand = board[targetX][targetY];
-	int ans = 0;
-	for (int i = 0; i < 4; i++)
-	{
-		for (int k = -sideDist[i]; k <= sideDist[i]; k++)
-		{
-			int nx = cx + dx[sDir] * k;
-			int ny = cy + dy[sDir] * k;
-
-			//바깥으로 나간 모래
-			int ratioSand = (totalSand * ratio[ratioIdx]) / 100;
-			if (nx < 0 || nx >= n || ny < 0 || ny >= n)
-				ans += ratioSand;
-			else
-				board[nx][ny] += ratioSand;
-			board[targetX][targetY] -= ratioSand;
-			ratioIdx++;
-		}
-		//이동방향 전진
-		cx += dx[dir];
-		cy += dy[dir];
-	}
-
-	//바깥으로 나간 모래
-	int aX = targetX + dx[dir], aY = targetY + dy[dir];
-	if (aX < 0 || aX >= n || aY < 0 || aY >= n)
-		ans += board[targetX][targetY];
-	else
-		board[aX][aY] += board[targetX][targetY];
-	board[targetX][targetY] = 0;
-	return ans;
+	if (x < 0 || x >= n || y < 0 || y >= n) return false;
+	return true;
 }
 
-//토네이도 움직임
-void Move(int x, int y, vector<vector<int>>& board, int n, int& ans)
+int wind(int x, int y, int dir, vector<vector<int>>& board, int n)
 {
-	int dir = 0;
-	int dist = 1;
+	int sideDir;
+	if(dir == 0 || dir == 2) sideDir = 1;
+	else sideDir = 0;
 
-	int cx = x, cy = y;
-	while (true)
+	int nx = x + dx[dir], ny = y +dy[dir];
+	if (!IsBounded(nx, ny, n)) return 0;
+	int totalSand = board[nx][ny];
+
+	int outOfSand = 0;
+	int idx = 0;
+	for (int i = 0; i < 4; i++)
 	{
-		for (int i = 0; i < 2; i++)
+		for (int j = -d[i]; j <= d[i]; j++)
 		{
-			for (int j = 0; j < dist; j++)
-			{
-				int nx = cx + dx[dir];
-				int ny = cy + dy[dir];
-				if (nx < 0 || nx >= n || ny < 0 || ny >= n) return;
-				ans += Wind(cx, cy, nx, ny, dir, board, n);
-				cx = nx;
-				cy = ny;
-			}
-			dir++;
-			dir%=4;
+			int sand = totalSand * r[idx] / 100;
+			int cx = x + dx[sideDir] * j;
+			int cy = y + dy[sideDir] * j;
+
+			if(!IsBounded(cx,cy,n)) outOfSand += sand;
+			else board[cx][cy] += sand;
+			board[nx][ny] -= sand;
+			idx++;
 		}
-		dist++;
+
+		x += dx[dir];
+		y += dy[dir];
 	}
+
+	int ax = nx + dx[dir], ay = ny + dy[dir];
+	if (!IsBounded(ax, ay, n)) outOfSand += board[nx][ny];
+	else board[ax][ay] += board[nx][ny];
+	return outOfSand;
 }
 
 int main(void)
 {
-
 	int n;
 	cin >> n;
-
 	vector<vector<int>> board(n, vector<int>(n));
 	for (int i = 0; i < n; i++)
 	{
@@ -92,7 +61,25 @@ int main(void)
 	}
 
 	int ans = 0;
-	Move(n / 2, n / 2, board, n, ans);
+	int cx = n / 2, cy = n / 2;
+	int dir = 0;
+	int dist = 1;
+	while (cy >= 0 && cx >= 0)
+	{
+		if(cx == 0 && cy == 0) break;
+
+		for (int i = 0; i < 2; i++)
+		{
+			for (int j = 0; j < dist; j++)
+			{
+				ans += wind(cx, cy, dir, board, n);
+				cx += dx[dir], cy += dy[dir];
+			}
+			dir = (dir + 1) % 4;
+		}
+		dist++;
+	}
+
 	cout << ans;
 	return 0;
 }
