@@ -1,38 +1,31 @@
 #include <iostream>
+#include <vector>
 #include <string>
 using namespace std;
 
-string str;
-int a[5005];
-int d[5005];
-int mod = 1000000;
+const int PRIME = 1'000'000;
 
 int main(void)
 {
-	cin.tie(0);
-	ios::sync_with_stdio(0);
-	
-	cin >> str;
+	string s;
+	cin >> s;
 
-	int len = str.length();
-	for (int i = 1; i <= len; i++)
-		a[i] = str[i - 1] - '0';
-	d[0] = 1;
+	s = " " + s;
+	int len = s.length();
 
-	for (int i = 1; i <= len; i++) {
-		if (a[i] > 0)
-			d[i] = d[i - 1];
-		int x = (a[i - 1] * 10 + a[i]);
-		if (x >= 10 && x <= 26)
-			d[i] = (d[i] + d[i - 2]) % mod;
+	vector<int> dp(len + 1, 0);
+	dp[0] = 1;
+	for (int i = 1; i < len; i++)
+	{
+		if (s[i] != '0')
+			dp[i] = (dp[i] + dp[i - 1]) % PRIME;
+		int num = (s[i - 1] - '0') * 10 + (s[i] - '0');
+		if (i >= 2)
+		{
+			if (10 <= num && num <= 26)
+				dp[i] = (dp[i] + dp[i - 2]) % PRIME;
+		}
 	}
-	cout << d[len];
-
-	/*
-	d[i] = 앞에서 i번째 자리까지의 수를 고려해서 나올 수 있는 해석의 가짓수
-	가장 뒤의 두 자리가 26보다 크면 현재 d[i-1]의 가짓수가 가능
-	26보다 작거나 같으면 현재 d[i-1]의 가짓수 더하기 
-	뒤의 두자리를 묶은 + d[i-2] 가짓수가 가능
- 	*/
+	cout << dp[len - 1];
 	return 0;
 }
