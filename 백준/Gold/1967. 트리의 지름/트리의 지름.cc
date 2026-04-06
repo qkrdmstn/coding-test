@@ -1,49 +1,47 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 using namespace std;
 
-vector<pair<int, int>> adj[10'005];
-int maxNode, maxDist;
+vector<pair<int, int>> edge[10'005];
 
-void DFS(int st, int dist, vector<bool>& vis)
+void DFS(int st, vector<bool>& vis, int len, int& maxDist, int& maxNode)
 {
-	if (dist > maxDist)
+	if (len > maxDist)
 	{
-		maxDist = dist;
+		maxDist = len;
 		maxNode = st;
 	}
 
-	for (auto nxt : adj[st])
+	for (auto nxt : edge[st])
 	{
-		int node, cost;
-		tie(node, cost) = nxt;
-		if(vis[node]) continue;
-		vis[node] = true;
-		DFS(node, dist + cost, vis);
-		vis[node] = false;
+		if(vis[nxt.first]) continue;
+
+		vis[nxt.first] = true;
+		DFS(nxt.first, vis, len + nxt.second, maxDist, maxNode);
+		vis[nxt.first] = false;
 	}
 }
 int main(void)
 {
 	int n;
 	cin >> n;
-	for (int i = 0; i < n - 1; i++)
+	for (int i = 0; i < n-1; i++)
 	{
 		int a, b, c;
-		cin >> a >> b >> c;
-		adj[a].push_back({b, c});
-		adj[b].push_back({a, c});
+		cin >> a >> b >>c;
+		edge[a].push_back({b,c});
+		edge[b].push_back({a,c});
 	}
 
 	vector<bool> vis(n+1, false);
+	int maxDist = 0;
+	int maxNode = 0;
 	vis[1] = true;
-	DFS(1, 0, vis);
+	DFS(1, vis, 0, maxDist, maxNode);
 
-
-	fill(vis.begin(), vis.end(), false);
-	vis[maxNode] = true;
-	DFS(maxNode, 0, vis);
-	cout << maxDist;
+	vector<bool> vis2(n+1, false);
+	vis2[maxNode] = true;
+	DFS(maxNode, vis2, 0, maxDist, maxNode);
+	cout << maxDist << "\n";
 	return 0;
 }
