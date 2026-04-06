@@ -14,24 +14,29 @@ int main(void)
 
 
 	int ans = 0;
-	for (int i = 0; i < w; i++)
+	int st = 0;
+	int ed = w-1;
+	while(st < ed)
 	{
-		int maxL = i;
-		int maxR = i;
-		for (int l = i - 1; l >= 0; l--)
+		if (arr[st] < arr[ed])
 		{
-			if (arr[l] > arr[maxL])
-				maxL = l;
-		}
+			int l = arr[st];
+			while (st < ed && arr[st] <= l)
+			{
+				ans += l-arr[st];
+				st++;
+			}
 
-		for (int r = i + 1; r < w; r++)
+		}
+		else
 		{
-			if (arr[r] > arr[maxR])
-				maxR = r;
+			int r = arr[ed];
+			while (st < ed && arr[ed] <= r)
+			{
+				ans += r - arr[ed];
+				ed--;
+			}
 		}
-
-		if(maxL == i  || maxR == i) continue;
-		ans += min(arr[maxL], arr[maxR]) - arr[i];
 	}
 	cout << ans;
 	return 0;
