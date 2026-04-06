@@ -1,39 +1,38 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 int main(void)
 {
+
 	int h, w;
 	cin >> h >> w;
 
-	int heights[501];
+	vector<int> arr(w);
 	for (int i = 0; i < w; i++)
-		cin >> heights[i];
+		cin >> arr[i];
+
 
 	int ans = 0;
-	int leftIdx = 0;
-	int rightIdx = w-1;
-	int leftMax = heights[leftIdx];
-	int rightMax = heights[rightIdx];
-	while (leftIdx < rightIdx)
+	for (int i = 0; i < w; i++)
 	{
-		if (leftMax < rightMax)
+		int maxL = i;
+		int maxR = i;
+		for (int l = i - 1; l >= 0; l--)
 		{
-			leftIdx++;
-			if(heights[leftIdx] >= leftMax)
-				leftMax = heights[leftIdx];
-			else
-				ans += (leftMax - heights[leftIdx]);
+			if (arr[l] > arr[maxL])
+				maxL = l;
 		}
-		else
-		{
-			rightIdx--;
-			if (heights[rightIdx] >= rightMax)
-				rightMax = heights[rightIdx];
-			else
-				ans += (rightMax - heights[rightIdx]);
-		}
-	}
 
+		for (int r = i + 1; r < w; r++)
+		{
+			if (arr[r] > arr[maxR])
+				maxR = r;
+		}
+
+		if(maxL == i  || maxR == i) continue;
+		ans += min(arr[maxL], arr[maxR]) - arr[i];
+	}
 	cout << ans;
+	return 0;
 }
