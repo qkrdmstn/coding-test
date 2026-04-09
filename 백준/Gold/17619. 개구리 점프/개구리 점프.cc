@@ -1,60 +1,57 @@
-#include<iostream>
-#include<vector>
-#include<algorithm>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <tuple>
 using namespace std;
 
-typedef struct pos {
-    int x1, x2, idx;
-};
-
-int n, q, ans, x1, x2, y;
-int par[100001], sze[100001];
-vector<pos> v;
-
-bool cmp(pos a, pos b) {
-    return a.x1 < b.x1;
+vector<int> p(100005,-1);
+int find(int x)
+{
+	if(p[x] == -1) return x;
+	return p[x] = find(p[x]);
 }
 
-int find(int x) {
-    if (x == par[x]) return x;
-    return par[x] = find(par[x]);
+bool uni(int u, int v)
+{
+	u = find(u), v = find(v);
+	if(u==v) return false;
+	p[u] = v;
+	return true;
 }
 
-void merge(int x, int y) {
-    x = find(x); y = find(y);
-    if (x == y) return;
-    if (sze[x] < sze[y]) swap(x, y);
-    par[y] = x;
-    sze[x] += sze[y];
-}
+int main(void)
+{
+	int n, q;
+	cin >> n >> q;
 
-int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0), cout.tie(0);
+	vector<tuple<int, int, int>> bridge(n+1);
+	for (int i = 1; i <= n; i++)
+	{
+		int x1, x2, y;
+		cin >>x1 >>x2 >> y;
+		bridge[i] = {x1,x2,i};
+	}
+	sort(bridge.begin(), bridge.end());
 
-    cin >> n >> q;
+	for (int i = 1; i <= n; i++)
+	{
+		int xi1, xi2, idxi;
+		tie(xi1, xi2, idxi) = bridge[i];
+		for (int j = i + 1; j <= n; j++)
+		{
+			int xj1, xj2, idxj;
+			tie(xj1, xj2, idxj) = bridge[j];
+			if(xj1 <= xi2) uni(idxi, idxj);
+			else break;
+		}
+	}
 
-    v.push_back({ 0,0,0 });
-    for (int i = 1; i <= n; i++) {
-        cin >> x1 >> x2 >> y;
-        v.push_back({ x1,x2,i });
-        par[i] = i;
-        sze[i] = 1;
-    }
-
-    sort(v.begin(), v.end(), cmp);
-
-    for (int i = 1, j = 2; i <= n && j <= n;) {
-        if (v[j].x1 <= v[i].x2) {
-            merge(v[i].idx, v[j].idx);
-            j++;
-        }
-        else i++;
-    }
-
-    for (int i = 0; i < q; i++) {
-        cin >> x1 >> x2;
-        if (find(x1) == find(x2)) cout << "1\n";
-        else cout << "0\n";
-    }
+	while (q--)
+	{
+		int a, b;
+		cin >> a >> b;
+		if(find(a) == find(b)) cout << "1\n";
+		else cout << "0\n";
+	}
+	return 0;
 }
