@@ -7,7 +7,7 @@ using namespace std;
 vector<int> p(100005,-1);
 int find(int x)
 {
-	if(p[x] == -1) return x;
+	if(p[x] <= -1) return x;
 	return p[x] = find(p[x]);
 }
 
@@ -15,7 +15,12 @@ bool uni(int u, int v)
 {
 	u = find(u), v = find(v);
 	if(u==v) return false;
-	p[u] = v;
+
+	if(p[u] > p[v])
+		swap(u, v);
+	if(p[u] == p[v])
+		p[u]--;
+	p[v] = u;
 	return true;
 }
 
@@ -31,18 +36,25 @@ int main(void)
 		cin >>x1 >>x2 >> y;
 		bridge[i] = {x1,x2,i};
 	}
-	sort(bridge.begin(), bridge.end());
+	sort(bridge.begin() + 1, bridge.end());
 
-	for (int i = 1; i <= n; i++)
+	int cx1, cx2, cidx;
+	tie(cx1, cx2, cidx) = bridge[1];
+	for (int i = 2; i <= n; i++)
 	{
-		int xi1, xi2, idxi;
-		tie(xi1, xi2, idxi) = bridge[i];
-		for (int j = i + 1; j <= n; j++)
+		int nx1, nx2, nidx;
+		tie(nx1, nx2, nidx) = bridge[i];
+
+		if (nx1 <= cx2)
 		{
-			int xj1, xj2, idxj;
-			tie(xj1, xj2, idxj) = bridge[j];
-			if(xj1 <= xi2) uni(idxi, idxj);
-			else break;
+			uni(cidx, nidx);
+			cx2 = max(cx2, nx2);
+		}
+		else
+		{
+			cidx = nidx;
+			cx1 = nx1;
+			cx2 = nx2;
 		}
 	}
 
