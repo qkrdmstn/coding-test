@@ -1,63 +1,63 @@
 #include <iostream>
 #include <string>
+#include <vector>
 using namespace std;
+string board[101];
+string target;
+int dp[105][105][105];
 
 int dx[4] = { 0,1,0,-1 };
 int dy[4] = { 1,0,-1,0 };
-string board[101];
-int dp[105][105][90];
-
 int main(void)
 {
 	int n, m, k;
+
 	cin >> n >> m >> k;
 
 	for (int i = 0; i < n; i++)
 		cin >> board[i];
+	cin >> target;
 
-	string word;
-	cin >> word;
-
-	int len = word.length();
+	int len = target.length();
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < m; j++)
 		{
-			if(board[i][j] == word[len-1])
-				dp[i][j][len-1] = 1;
+			if (board[i][j] == target[len - 1])
+				dp[i][j][len - 1] = 1;
 		}
 	}
 
-	for (int spell = len - 1; spell >= 1; spell--)
+	for (int i = len - 2; i >= 0; i--)
 	{
-		for (int i = 0; i < n; i++)
+		for (int x = 0; x < n; x++)
 		{
-			for (int j = 0; j < m; j++)
+			for (int y = 0; y < m; y++)
 			{
-				if(board[i][j] != word[spell]) continue;
-				for (int dir = 0; dir < 4; dir++)
+				if (board[x][y] == target[i])
 				{
-					for (int dist = 1; dist <= k; dist++)
+					for (int dir = 0; dir < 4; dir++)
 					{
-						int nx = i + dx[dir] * dist;
-						int ny = j + dy[dir] * dist;
-
-						if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
-						if(board[nx][ny] == word[spell - 1])
-							dp[nx][ny][spell - 1] += dp[i][j][spell];
+						for (int dist = 1; dist <= k; dist++)
+						{
+							int nx = x + dx[dir] * dist;
+							int ny = y + dy[dir] * dist;
+							if(nx < 0 || nx >=n || ny < 0 || ny >= m) continue;
+							if(board[nx][ny] == target[i+1])
+								dp[x][y][i] += dp[nx][ny][i+1];
+						}
 					}
 				}
 			}
 		}
 	}
-
 	int ans = 0;
-	for (int i = 0; i < n; i++)
+	for (int x = 0; x < n; x++)
 	{
-		for (int j = 0; j < m; j++)
+		for (int y = 0; y < m; y++)
 		{
-			if(board[i][j] != word[0]) continue;
-			ans += dp[i][j][0];
+			if (board[x][y] == target[0])
+				ans += dp[x][y][0];
 		}
 	}
 	cout << ans;
