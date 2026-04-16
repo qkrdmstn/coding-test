@@ -1,54 +1,34 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 using namespace std;
-
-bool cmp(tuple<int, int, int> a, tuple<int, int, int> b)
-{
-	int as, ae, ac;
-	int bs, be, bc;
-	tie(as, ae, ac) = a;
-	tie(bs, be, bc) = b;
-
-	if (ae == be)
-		return as < bs;
-	return ae < be;
-}
 
 int main(void)
 {
+	cin.tie(0);
+	ios::sync_with_stdio(0);
+
 	int n;
 	cin >> n;
 
-	vector<tuple<int, int, int>> meeting(n + 1);
+	vector<pair<int, int>> info(n + 1); //{기간, 보상}
 	for (int i = 1; i <= n; i++)
 	{
-		int t, p;
-		cin >> t >> p;
-		meeting[i] = { i, i + t - 1, p }; //{상담 시작, 종료, 수익}
+		int p, r;
+		cin >> p >> r;
+		info[i] = { p, r };
 	}
-	
-	//상담 종료일을 기준으로 오름차순 정렬
-	sort(meeting.begin() + 1, meeting.end(), cmp);
 
-	vector<int> dp(n+1, 0);
-	for (int i = 1; i <= n; i++)
+	vector<int> dp(n + 2, 0); // i번째 일부터 n일까지 벌 수 있는 최대 이익
+	for (int i = n; i >= 1; i--)
 	{
-		int st, ed, pay;
-		tie(st, ed, pay) = meeting[i];
-		if(ed > n) continue;
-		dp[ed] = max(dp[st-1] + pay, dp[ed]);
-		
-		if (i + 1 <= n)
+		int endDay = i + info[i].first - 1;
+		if (endDay > n)
+			dp[i] = dp[i + 1];
+		else
 		{
-			int nxtMeetingEd = get<1>(meeting[i + 1]);
-			for (int j = ed + 1; j <= nxtMeetingEd; j++)
-			{
-				if(j > n) break;
-				dp[j] = dp[ed];
-			}
+			int pi = info[i].second;
+			dp[i] = max(dp[i + 1], pi + dp[endDay + 1]); //i번째 일을 건너뛰거나, 강의를 하고 + 끝난 다음 날 강의를 시작하거나
 		}
 	}
-	cout << dp[n];
-	return 0;
+	cout << dp[1];
 }
