@@ -1,48 +1,44 @@
 #include <iostream>
-#include <string>
 #include <vector>
+#include <string>
 using namespace std;
 
 int n, k;
-vector<bool> used(26, false);
-vector<string> s(52);
+vector<string> targets;
 
-int Check()
+int check(vector<bool>& used)
 {
-	int cnt =0;
-	for (int i=0; i<n; i++)
+	int res = 0;
+	for (string& target : targets)
 	{
-		string word = s[i];
-		int len = word.length();
-		bool possible = true;
-		for (int j = 0; j < len; j++)
+		bool isPossible = true;
+		for (int i = 0; i < target.length(); i++)
 		{
-			int idx = word[j] - 'a';
-			if(!used[idx])
+			int idx = target[i] - 'a';
+			if (!used[idx])
 			{
-				possible = false;
+				isPossible = false;
 				break;
 			}
 		}
-		if(possible) cnt++;
+		if(isPossible) res++;
 	}
-	return cnt;
+	return res;
 }
 
-void DFS(int st, int cnt, int &ans)
+void DFS(int st, int cnt, vector<bool>& used, int& ans)
 {
-
 	if (cnt == k)
 	{
-		ans = max(ans, Check());
-		return;
+		ans = max(ans, check(used));
+		return ;
 	}
 
 	for (int i = st; i < 26; i++)
 	{
 		if(used[i]) continue;
 		used[i] = true;
-		DFS(i + 1, cnt + 1, ans);
+		DFS(i+1, cnt + 1, used, ans);
 		used[i] = false;
 	}
 }
@@ -50,24 +46,29 @@ void DFS(int st, int cnt, int &ans)
 int main(void)
 {
 	cin >> n >> k;
-	for(int i=0; i<n; i++)
-		cin >> s[i];
+	for (int i = 0; i < n; i++)
+	{
+		string s;
+		cin >> s;
+		targets.push_back(s);
+	}
 
-	if (k < 5)
+	string fixed = "antic";
+	vector<bool> used(26, false);
+	for (int i = 0; i < 5; i++)
+	{
+		int idx = fixed[i] - 'a';
+		used[idx] = true;
+	}
+	k -= 5;
+	if (k < 0)
 	{
 		cout << 0;
 		return 0;
 	}
 
 	int ans = 0;
-	string fixed = "antic";
-	for (int i = 0; i < fixed.length(); i++)
-	{
-		used[fixed[i] - 'a'] = true;
-	}
-
-	DFS(0, 5, ans);
-
+	DFS(0, 0, used, ans);
 	cout << ans;
 	return 0;
 }
