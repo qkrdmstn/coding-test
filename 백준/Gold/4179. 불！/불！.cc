@@ -3,80 +3,99 @@
 #include <string>
 using namespace std;
 
-queue<pair<int, int>> q1;
-queue<pair<int, int>> q2;
-string map[1001];
-int dist1[1001][1001];
-int dist2[1001][1001];
-int dx[4] = { 0, 1, 0, -1 };
-int dy[4] = { 1, 0, -1, 0 };
+int dx[4] = { 0,1, 0,-1 };
+int dy[4] = { 1,0,-1,0 };
+int r, c;
+bool fired[1005][1005];
+int dist[1005][1005];
+string board[1005];
+queue<pair<int, int>> fireQueue;
+queue<pair<int, int>> q;
 
 int main(void)
 {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
+	cin >> r >> c;
+	for (int i = 0; i < r; i++)
+	{
+		cin >> board[i];
+		for (int j = 0; j < c; j++)
+		{
+			if (board[i][j] == 'F')
+			{
+				fireQueue.push({ i,j });
+				fired[i][j] = true;
+				board[i][j] = '.';
+			}
+			else if (board[i][j] == 'J')
+			{
+				q.push({ i,j });
+				dist[i][j] = 1;
+				board[i][j] = '.';
+			}
+		}
+	}
 
-    int n, m;
-    cin >> n >> m;
+	while (!q.empty())
+	{
+		// 불과 지훈이가 동시에 도착하면 안되기 때문에 불의 확산 시뮬레이션을 먼저 수행합니다.
+		int qSize = fireQueue.size();
+		for (int i = 0; i < qSize; i++)
+		{
+			auto cur = fireQueue.front(); fireQueue.pop();
 
-    for (int i = 0; i < n; i++) {
-        cin >> map[i];
-        for (int j = 0; j < m; j++) {
-            dist1[i][j] = -1;
-            dist2[i][j] = -1;
-            if (map[i][j] == 'F') {
-                q1.push({ i,j });
-                dist1[i][j] = 0;
-            }
-            else if (map[i][j] == 'J') {
-                q2.push({ i,j });
-                dist2[i][j] = 0;
-            }
-        }
-    }
+			for (int dir = 0; dir < 4; dir++)
+			{
+				int nx = cur.first + dx[dir];
+				int ny = cur.second + dy[dir];
+				if(nx < 0 || nx >= r || ny < 0 || ny >= c) continue;
+				if(fired[nx][ny] || board[nx][ny] != '.') continue;
+				fired[nx][ny] = true;
+				fireQueue.push({nx, ny});
+			}
+		}
 
-    //불 BFS
-    while (!q1.empty()) {
-        pair<int, int> cur = q1.front();
-        q1.pop();
+		qSize = q.size();
+		for (int i = 0; i < qSize; i++)
+		{
+			auto cur = q.front(); q.pop();
+			if (cur.first == 0 || cur.first == r - 1 || cur.second == 0 || cur.second == c - 1)
+			{
+				cout << dist[cur.first][cur.second];
+				return 0;
+			}
 
-        for (int i = 0; i < 4; i++) {
-            int nx = cur.first + dx[i];
-            int ny = cur.second + dy[i];
+			for (int dir = 0; dir < 4; dir++)
+			{
+				int nx = cur.first + dx[dir];
+				int ny = cur.second + dy[dir];
+				if (nx < 0 || nx >= r || ny < 0 || ny >= c) continue;
+				if (dist[nx][ny] >= 1 || fired[nx][ny] || board[nx][ny] != '.') continue;
+				dist[nx][ny] = dist[cur.first][cur.second] + 1;
+				q.push({ nx, ny });
+			}
+		}
 
-            if (nx < 0 || nx >= n || ny < 0 || ny >= m)
-                continue;
-            if (dist1[nx][ny] != -1 || map[nx][ny] == '#')
-                continue;
-
-            dist1[nx][ny] = dist1[cur.first][cur.second] + 1;
-            q1.push({ nx, ny });
-        }
-    }
-
-    //지훈 BFS
-    while (!q2.empty()) {
-        pair<int, int> cur = q2.front();
-        q2.pop();
-
-        for (int i = 0; i < 4; i++) {
-            int nx = cur.first + dx[i];
-            int ny = cur.second + dy[i];
-
-            //탈출
-            if (nx < 0 || nx >= n || ny < 0 || ny >= m) {
-                cout << dist2[cur.first][cur.second] + 1;
-                return 0;
-            }
-            if (dist2[nx][ny] != -1 || map[nx][ny] == '#')
-                continue;
-            if (dist1[nx][ny] != -1 && dist1[nx][ny] <= dist2[cur.first][cur.second] + 1)
-                continue;
-
-            dist2[nx][ny] = dist2[cur.first][cur.second] + 1;
-            q2.push({ nx, ny });
-        }
-    }
-    cout << "IMPOSSIBLE";
-    return 0;
+		//cout << "fire----------------------------------------------\n";
+		//for (int i = 0; i < r; i++)
+		//{
+		//	for (int j = 0; j < c; j++)
+		//	{
+		//		cout.width(2);
+		//		cout << fired[i][j];
+		//	}
+		//	cout << "\n";
+		//}
+		//cout << "dist----------------------------------------------\n";
+		//for (int i = 0; i < r; i++)
+		//{
+		//	for (int j = 0; j < c; j++)
+		//	{
+		//		cout.width(2);
+		//		cout << dist[i][j];
+		//	}
+		//	cout << "\n";
+		//}
+	}
+	cout << "IMPOSSIBLE\n";
+	return 0;
 }
