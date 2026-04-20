@@ -1,70 +1,69 @@
 #include <iostream>
 #include <vector>
-#include <stack>
-#include <tuple>
+#include <queue>
 using namespace std;
 
-vector<int> adj[505];
-bool vis[505];
-
-bool isTree(int start)
+/*
+각 노드로부터 시작해 BFS로 그래프 탐색을 수행. 노드와 간선의 개수를 세어
+노드의 개수 - 1 == 간선의 개수 가 성립하면 트리로 판정한다.
+*/
+void print(int step, int cnt)
 {
-	stack<pair<int, int>> q;
-	q.push({ start,0 });
-	vis[start] = true;
-
-	bool isTree = true;
-	while (!q.empty()) {
-		int cur, par;
-		tie(cur, par) = q.top();
-		q.pop();
-
-		for (auto nxt : adj[cur]) {
-			if (nxt == par) continue;
-			if (vis[nxt])
-				return false;
-			q.push({ nxt, cur });
-			vis[nxt] = true;
-		}
-	}
-	return true;
-	/*
-	BFS 풀이, 부모도 아니고, 이미 방문한 노드라면 순환이 있음으로 판단
-	-> tree X
-	*/
+	cout << "Case " << step << ": ";
+	if(cnt == 0)
+		cout << "No trees.\n";
+	else if(cnt == 1)
+		cout << "There is one tree.\n";
+	else
+		cout << "A forest of " << cnt << " trees.\n";
 }
 
 int main(void)
 {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-
-	int t = 1;
-	while (true) {
-		int n, m, cnt = 0;
+	int step = 1;
+	int n, m;
+	while (true)
+	{
 		cin >> n >> m;
-		if (n == 0 && m == 0) break;
+		if(n==0 && m == 0)
+			break;
 
-		fill(vis, vis + n + 1, false);
+		vector<vector<int>> adj(n+1);
+		for (int i = 0; i < m; i++)
+		{
+			int a, b;
+			cin >> a >> b;
+			adj[a].push_back(b);
+			adj[b].push_back(a);
+		}
+
+		vector<bool> vis(n+1, false);
+		queue<int> q;
+		int ans = 0;
 		for (int i = 1; i <= n; i++)
-			adj[i].clear();
+		{
+			if(vis[i]) continue;
+			q.push(i);
+			vis[i] = true;
 
-		for (int i = 0; i < m; i++) {
-			int u, v;
-			cin >> u >> v;
-			adj[u].push_back(v);
-			adj[v].push_back(u);
+			int nodeCnt = 0, edgeCnt = 0;
+			while (!q.empty())
+			{
+				int cur = q.front(); q.pop();
+				nodeCnt++;
+				for (int& nxt : adj[cur])
+				{
+					edgeCnt++;
+					if(vis[nxt]) continue;
+					q.push(nxt);
+					vis[nxt] = true;
+				}
+			}
+			//양방향 그래프기 때문에 간선을 2로 나눠준다.
+			if(nodeCnt - 1 == edgeCnt/2) ans++;
 		}
-
-		for (int i = 1; i <= n; i++) {
-			if (vis[i]) continue;
-			cnt += isTree(i);
-		}
-
-		cout << "Case " << t++ << ": ";
-		if (cnt == 0) cout << "No trees.\n";
-		else if (cnt == 1) cout << "There is one tree.\n";
-		else cout << "A forest of " << cnt << " trees.\n";
+		print(step, ans);
+		step++;
 	}
 
 	return 0;
