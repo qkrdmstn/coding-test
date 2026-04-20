@@ -1,47 +1,41 @@
 #include <iostream>
-#include <queue>
 #include <vector>
 #include <algorithm>
+#include <set>
 using namespace std;
-
-bool cmp(pair<int, int> a, pair<int, int> b)
-{
-	if (a.first == b.first)
-		return a.second > b.second;
-	return a.first < b.first;
-}
 
 int main(void)
 {
 	int n, k;
 	cin >> n >> k;
 
-	vector<pair<int, int>> jewel(n);
-	for(int i=0; i<n; i++)
-		cin >> jewel[i].first >> jewel[i].second;
-
-	vector<int> bag(k);
-	for(int i=0; i<k; i++)
-		cin >> bag[i];
-
-	sort(jewel.begin(), jewel.end(), cmp);
-	sort(bag.begin(), bag.end());
-
-	int cnt = 0;
-	long long ans = 0;
-	priority_queue<int, vector<int>> pq;
+	vector<pair<int, int>> jwel(n);
+	multiset<int>bag;
+	for (int i = 0; i < n; i++)
+		cin >> jwel[i].second >> jwel[i].first;
 	for (int i = 0; i < k; i++)
 	{
-		while (jewel[cnt].first <= bag[i] && cnt < n)
+		int c;
+		cin >> c;
+		bag.insert(c);
+	}
+
+	sort(jwel.begin(), jwel.end(), greater<pair<int, int>>());
+
+	long long ans = 0;
+	int getCnt = 0;
+	for (auto j : jwel)
+	{
+		int m, v;
+		tie(v, m) = j;
+		auto lower = bag.lower_bound(m);
+		if (lower != bag.end())
 		{
-			pq.push(jewel[cnt].second);
-			cnt++;
+			getCnt++;
+			ans += v;
+			bag.erase(lower);
 		}
-		if (!pq.empty())
-		{
-			ans += pq.top();
-			pq.pop();
-		}
+		if(getCnt >= k) break;
 	}
 	cout << ans;
 	return 0;
