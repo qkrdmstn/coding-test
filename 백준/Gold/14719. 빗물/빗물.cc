@@ -4,38 +4,34 @@ using namespace std;
 
 int main(void)
 {
-
 	int h, w;
 	cin >> h >> w;
 
-	vector<int> arr(w);
-	for (int i = 0; i < w; i++)
+	vector<int> arr(w,0);
+	for(int i=0; i<w; i++)
 		cin >> arr[i];
-
-
 	int ans = 0;
-	int st = 0;
-	int ed = w-1;
-	while(st < ed)
+	int leftMax = arr[0];
+	int leftIdx = 1;
+	int rightMax = arr[w-1];
+	int rightIdx = w-2;;
+	while(leftIdx <= rightIdx)
 	{
-		if (arr[st] < arr[ed])
+		if (leftMax < rightMax)
 		{
-			int l = arr[st];
-			while (st < ed && arr[st] <= l)
-			{
-				ans += l-arr[st];
-				st++;
-			}
-
+			if(arr[leftIdx] > leftMax)
+				leftMax = arr[leftIdx];
+			else
+				ans += leftMax - arr[leftIdx];
+			leftIdx++;
 		}
 		else
 		{
-			int r = arr[ed];
-			while (st < ed && arr[ed] <= r)
-			{
-				ans += r - arr[ed];
-				ed--;
-			}
+			if (arr[rightIdx] > rightMax)
+				rightMax = arr[rightIdx];
+			else
+				ans += rightMax - arr[rightIdx];
+			rightIdx--;
 		}
 	}
 	cout << ans;
