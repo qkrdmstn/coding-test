@@ -1,32 +1,29 @@
 #include <string>
 #include <vector>
-#include <stack>
+#include <queue>
 using namespace std;
 
 vector<int> solution(vector<int> progresses, vector<int> speeds) {
     vector<int> answer;
-    vector<int> restDays;
-    stack<int> s;
     
-    for(int i=progresses.size() - 1; i>=0; i--)
+    queue<int> q;
+    for(int i=0; i<progresses.size(); i++)
     {
-        int restDay = (100 - progresses[i]) / speeds[i];
-        if((100 - progresses[i]) % speeds[i] != 0) restDay++;
-        s.push(restDay);
+        int restDay = (100-progresses[i]) / speeds[i];
+        if((100-progresses[i]) % speeds[i] != 0) restDay++;
+        q.push(restDay);
     }
     
-    int maxDays = s.top();
-    while(1)
+    while(!q.empty())
     {
-        int cnt = 0;
-        while(!s.empty() && s.top() <= maxDays)
+        int curDay = q.front();
+        int count = 0;
+        while(!q.empty() && curDay >= q.front())
         {
-            s.pop();
-            cnt++;
+            q.pop();
+            count++;
         }
-        answer.push_back(cnt);
-        if(s.empty()) break;
-        maxDays = s.top();
+        answer.push_back(count);
     }
     return answer;
 }
