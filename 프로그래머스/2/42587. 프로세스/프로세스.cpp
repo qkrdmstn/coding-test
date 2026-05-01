@@ -1,31 +1,35 @@
 #include <string>
 #include <vector>
-#include <queue>
-#include <algorithm>
+#include <deque>
 using namespace std;
 
 int solution(vector<int> priorities, int location) {
     int answer = 0;
-    
-    queue<pair<int, int>> q;
-    vector<int> orderedPriorities;
+    deque<pair<int, int>> dq;
     for(int i=0; i<priorities.size(); i++)
+        dq.push_back({priorities[i], i});
+
+    while(!dq.empty())
     {
-        q.push({priorities[i], i});
-        orderedPriorities.push_back(priorities[i]);
-    }
-    sort(orderedPriorities.begin(), orderedPriorities.end(), greater<int>());
-    
-    for(int i=0; i<orderedPriorities.size(); i++)
-    {
-        while(q.front().first != orderedPriorities[i])
+        int cur = dq.front().first;
+        bool flag = true;
+        for(int i=1; i<dq.size(); i++)
         {
-            q.push(q.front());
-            q.pop();
+            if(cur < dq[i].first)
+            {
+                dq.push_back(dq.front());
+                dq.pop_front();
+                flag = false;
+                break;
+            }
         }
-        answer++;
-        if(q.front().second == location) break;
-        q.pop();
+        if(flag)
+        {
+            answer++;
+            if(dq.front().second == location)
+                return answer;
+            dq.pop_front();
+        }
     }
     return answer;
 }
