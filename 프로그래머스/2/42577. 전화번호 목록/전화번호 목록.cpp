@@ -1,27 +1,32 @@
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <unordered_set>
+#include <algorithm>
 using namespace std;
 
+bool cmp(string a, string b)
+{
+    return a.length() > b.length();
+}
+
 bool solution(vector<string> phone_book) {
-    //모든 전화번호의 부분 집합을 키 값으로 hash에 count 합니다.
-    unordered_map<string, int> prefixCount;
-    for(int i=0; i<phone_book.size(); i++)
+    bool answer = true;
+    
+    sort(phone_book.begin(), phone_book.end(), cmp);
+    unordered_set<string> s;
+    for(auto &str: phone_book)
     {
-        string s = "";
-        for(int j=0; j<phone_book[i].length(); j++)
+        string tmp = "";
+        if(s.find(str) != s.end())
         {
-            s += phone_book[i][j];
-            prefixCount[s]++;
+            answer = false;
+            return answer;
+        }
+        for(int i=0; i<str.length(); i++)
+        {
+            tmp+=str[i];
+            s.insert(tmp);
         }
     }
-    
-    //온전한 문자열을 키값으로 hash 테이블 데이터에 접근합니다.
-    //이때, 자기 자신을 포함하므로, count가 2 이상이어야 합니다.
-     for(int i=0; i<phone_book.size(); i++)
-     {
-         if(prefixCount[phone_book[i]] >= 2)
-             return false;
-     }
-    return true;
+    return answer;
 }
