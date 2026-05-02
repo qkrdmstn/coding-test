@@ -1,63 +1,49 @@
 #include <string>
 #include <vector>
-#include <unordered_map>
-#include <queue>
 #include <sstream>
+#include <queue>
+#include <unordered_map>
 using namespace std;
 
 vector<int> solution(vector<string> operations) {
     vector<int> answer;
     
-    priority_queue<int> maxPQ;
-    priority_queue<int, vector<int>, greater<int>> minPQ;
+    priority_queue<int, vector<int>, greater<int>> minHeap;
+    priority_queue<int> maxHeap;
     unordered_map<int, int> m;
     
-    //최소 힙과 최대 힙 각각을 이용하여 최대 최소 값 제거를 진행합니다.
-    // 이때, 제거되는 원소는 map 자료구조를 활용해 확인합니다.
-    for(int i=0; i<operations.size(); i++)
+    for(string &op:operations)
     {
-        stringstream ss(operations[i]);
-        string op;
+        stringstream ss(op);
+        char opr;
         int num;
-        ss >> op >> num;
+        ss >> opr >> num;
         
-        if(op == "I")
+        if(opr == 'I')
         {
-            minPQ.push(num);
-            maxPQ.push(num);
+            minHeap.push(num);
+            maxHeap.push(num);
             m[num]++;
         }
-        else
+        else if(opr == 'D')
         {
-            if(num == 1 && !maxPQ.empty())
+            if(num == 1 && !maxHeap.empty())
             {
-                m[maxPQ.top()]--;
-                maxPQ.pop();
+                m[maxHeap.top()]--;
+                maxHeap.pop();
             }
-            else if(num == -1 && !minPQ.empty())
+            else if(num == -1 && !minHeap.empty())
             {
-                m[minPQ.top()]--;
-                minPQ.pop();
+                m[minHeap.top()]--;
+                minHeap.pop();
             }
-            
-            //map에서 카운트하는 원소 개수가 0이하라면 힙에서 모두 제거합니다.
-            while(!minPQ.empty() && m[minPQ.top()] <= 0)
-                minPQ.pop();
-            while(!maxPQ.empty() && m[maxPQ.top()] <= 0)
-                maxPQ.pop();
+            while(!maxHeap.empty() && m[maxHeap.top()] <= 0)
+                maxHeap.pop();
+            while(!minHeap.empty() && m[minHeap.top()] <= 0)
+                minHeap.pop();
         }
     }
-    
-    if(maxPQ.empty() || minPQ.empty()) 
-    {
-        answer.push_back(0);
-        answer.push_back(0);
-    }
-    else
-    {
-        answer.push_back(maxPQ.top());
-        answer.push_back(minPQ.top());
-        
-    }
+    if(maxHeap.empty() || minHeap.empty()) answer = {0,0};
+    else answer = {maxHeap.top(), minHeap.top()};
     return answer;
 }
