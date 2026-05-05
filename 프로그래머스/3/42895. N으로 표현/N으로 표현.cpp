@@ -4,33 +4,32 @@
 using namespace std;
 
 int solution(int N, int number) {
-    if(number == N) return 1;
-    unordered_set<int> s[9];
+    int answer = -1;
+    vector<unordered_set<int>> setList(9);
     
-    int cur = N;
+    setList[0].insert(0);
+    int num = 0;
     for(int i=1; i<=8; i++)
     {
-        s[i].insert(cur);
-        cur = cur * 10 + N;
-    }
-    
-    for(int i=1; i<=8; i++)
-    {
+        num = (num * 10) + N;
+        setList[i].insert(num);
         for(int j=1; j<i; j++)
         {
-            for(auto &d: s[i-j])
+            for(auto &s1: setList[i-j])
             {
-                for(auto &p: s[j])
+                for(auto &s2: setList[j])
                 {
-                    s[i].insert(d+p);
-                    s[i].insert(d-p);
-                    s[i].insert(d*p);
-                    if(p!=0) s[i].insert(d/p);
+                    setList[i].insert(s1 + s2);
+                    setList[i].insert(s1 - s2);
+                    setList[i].insert(s1 * s2);
+                    if(s2 != 0)
+                        setList[i].insert(s1 / s2);
                 }
             }
-            if(s[i].count(number) != 0)
-                return i;
         }
+        if(setList[i].find(number) != setList[i].end())
+            return i;
     }
+    
     return -1;
 }
