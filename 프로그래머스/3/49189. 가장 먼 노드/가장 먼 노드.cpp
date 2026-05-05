@@ -1,29 +1,30 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <iostream>
 using namespace std;
 
 int solution(int n, vector<vector<int>> edge) {
     int answer = 0;
     
-    vector<vector<int>> board(n + 1, vector<int>());
-    for(int i=0; i<edge.size(); i++)
+    vector<vector<int>> adj(n+1);
+    for(auto &e: edge)
     {
-        board[edge[i][0]].push_back(edge[i][1]);
-        board[edge[i][1]].push_back(edge[i][0]);
+        adj[e[0]].push_back(e[1]);
+        adj[e[1]].push_back(e[0]);
     }
     
-    //BFS
-    int maxDist = -1;
-    vector<int> dist(n+1, -1);
     queue<int> q;
+    vector<int> dist(n+1, -1);
     q.push(1);
     dist[1] = 0;
+    
+    int maxDist = 0;
     while(!q.empty())
     {
         int cur = q.front(); q.pop();
-        maxDist = max(dist[cur], maxDist);
-        for(auto nxt: board[cur])
+        maxDist = max(maxDist, dist[cur]);
+        for(auto &nxt: adj[cur])
         {
             if(dist[nxt] >= 0) continue;
             q.push(nxt);
@@ -31,10 +32,9 @@ int solution(int n, vector<vector<int>> edge) {
         }
     }
     
-    
-    for(auto d: dist)
+    for(int i=1; i<=n; i++)
     {
-        if(d == maxDist) answer++;
+        if(maxDist == dist[i]) answer++;
     }
     return answer;
 }

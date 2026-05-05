@@ -4,11 +4,11 @@
 
 ### 성능 요약
 
-메모리: 14 MB, 시간: 9.56 ms
+메모리: 14 MB, 시간: 8.31 ms
 
 ### 구분
 
-코딩테스트 연습 > 그래프
+ > 
 
 ### 채점결과
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2026년 02월 19일 22:57:18
+2026년 05월 05일 15:21:17
 
 ### 문제 설명
 
@@ -51,7 +51,7 @@
 
 <p>예제의 그래프를 표현하면 아래 그림과 같고, 1번 노드에서 가장 멀리 떨어진 노드는 4,5,6번 노드입니다.</p>
 
-<p><img src="https://grepp-programmers.s3.amazonaws.com/files/ybm/fadbae38bb/dec85ab5-0273-47b3-ba73-fc0b5f6be28a.png" title="" alt="image.png"></p>
+<p><img src="https://asset.programmers.co.kr/files/ybm/fadbae38bb/dec85ab5-0273-47b3-ba73-fc0b5f6be28a.png" title="" alt="image.png"></p>
 
 
 > 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
