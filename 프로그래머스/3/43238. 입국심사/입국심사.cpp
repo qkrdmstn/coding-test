@@ -1,15 +1,14 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+
 using namespace std;
 
-long long Result(long long time, vector<int>& times)
+long long func(long long m, vector<int>& times)
 {
     long long sum = 0;
-    for(int i=0; i<times.size(); i++)
-    {
-        sum += time/times[i];
-    }
+    for(auto& t: times)
+        sum += m/t;
     return sum;
 }
 
@@ -18,15 +17,18 @@ long long solution(int n, vector<int> times) {
     
     sort(times.begin(), times.end());
     long long s = 1;
-    long long e = n*times[times.size()-1];
-    while(s<e)
+    long long e = (long long)times.back() * n;
+    
+    while(s <= e)
     {
-        long long m = (s+e)/2;
-        if(Result(m, times) >= n)
-            e = m;
+        long long m = s + (e-s)/2;
+        if(func(m, times) >= n)
+        {
+            answer = m;
+            e = m - 1;
+        }
         else
-            s = m+1;
-        if(s>=e) break;
+            s = m + 1;
     }
-    return s;
+    return answer; 
 }
