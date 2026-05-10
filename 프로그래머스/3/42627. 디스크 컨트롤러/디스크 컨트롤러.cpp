@@ -5,34 +5,34 @@ using namespace std;
 
 int solution(vector<vector<int>> jobs) {
     int answer = 0;
-    
-    //{작업 시간, 요청 시간}
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> waitPQ;
-    //{요청 시간, 작업 시간}
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> reqPQ;
-    
-    for(auto &job :jobs)
-        reqPQ.push({job[0], job[1]});
-
     int curTime = 0;
-    while(!reqPQ.empty() || !waitPQ.empty())
+    priority_queue
+        <pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>>
+        jobQueue; //{요청 시각, 소요 시간}
+    priority_queue
+        <pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>>
+        waitQueue; //{소요 시간, 요청 시각}
+
+    for(auto& job: jobs)
+        jobQueue.push({job[0], job[1]});
+
+    while(!jobQueue.empty() || !waitQueue.empty())
     {
-        while(!reqPQ.empty() && reqPQ.top().first <= curTime)
+        while(!jobQueue.empty() && jobQueue.top().first <= curTime)
         {
-            waitPQ.push({reqPQ.top().second, reqPQ.top().first});
-            reqPQ.pop();
+            waitQueue.push({jobQueue.top().second, jobQueue.top().first});
+            jobQueue.pop();
         }
-        
-        if(waitPQ.empty() && !reqPQ.empty())
+        //현재 시각에 대기 중인 작업이 없는 경우, 점프
+        if(!jobQueue.empty() && waitQueue.empty())
         {
-            curTime = reqPQ.top().first;
-            continue;
+            curTime = jobQueue.top().first;
+            continue;            
         }
-        
-        auto job = waitPQ.top(); waitPQ.pop();
-        curTime += job.first;
-        answer += curTime - job.second;
+        curTime += waitQueue.top().first;
+        //반환 시간 = 작업 종료 시각 - 요청 시각
+        answer += curTime - waitQueue.top().second;
+        waitQueue.pop();
     }
-    answer /= jobs.size();
-    return answer;
+    return answer/jobs.size();
 }
