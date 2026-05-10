@@ -1,10 +1,10 @@
 # [level 2] 양궁대회 - 92342 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/92342?language=cpp) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/92342?language=cpp#) 
 
 ### 성능 요약
 
-메모리: 4.23 MB, 시간: 0.07 ms
+메모리: 3.73 MB, 시간: 0.06 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2026년 05월 05일 17:38:40
+2026년 05월 10일 21:17:18
 
 ### 문제 설명
 

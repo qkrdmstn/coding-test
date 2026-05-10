@@ -1,70 +1,71 @@
 #include <string>
 #include <vector>
 #include <iostream>
-using namespace std;
 
-bool isBetter(vector<int>& cur, vector<int>& best) {
-    for (int i = 10; i >= 0; i--) {
-        if (cur[i] > best[i]) return true;
-        if (cur[i] < best[i]) return false;
+using namespace std;
+bool IsBetter(vector<int>& cur, vector<int>& best)
+{
+    for(int i=10; i>=0; i--)
+    {
+        if(cur[i] > best[i]) return true;
+        if(cur[i] < best[i]) return false;
     }
     return false;
 }
-
-int ClacScore(vector<int>& res, vector<int>& info)
+int CalcDiff(vector<int>& target, vector<int>& info)
 {
-    //라이언, 어피치 점수
-    int score1 = 0, score2 = 0;
-    for(int i=0; i<=10; i++)
+    int score1 = 0; //라이언 점수
+    int score2 = 0; //어피치 점수
+    for(int i=0; i<11; i++)
     {
-        if(res[i] == 0 && info[i] == 0)
+        if(target[i] == 0 && info[i] == 0)
             continue;
-        else if(res[i] > info[i])
-            score1 += 10-i;
+        else if(target[i] > info[i])
+            score1 += 10 - i;
         else score2 += 10 - i;
     }
     return score1 - score2;
 }
 
-void DFS(int idx, int arrows, vector<int>& curRes, vector<int>& info, int& maxScoreDiff, vector<int>& res)
+void DFS(int curTarget, int arrows, vector<int>& target, vector<int>& info, int& maxDiff, vector<int>& answer)
 {
-    if(idx == 11)
+    if(curTarget == 11)
     {
-        curRes[10] += arrows;
-        int curScoreDiff = ClacScore(curRes, info);
-        if(curScoreDiff > maxScoreDiff)
+        if(arrows >= 0)
+            target[10] += arrows;
+        int curDiff = CalcDiff(target, info);
+        if(curDiff > maxDiff)
         {
-            maxScoreDiff = curScoreDiff;
-            res = curRes;
+            answer = target;
+            maxDiff = curDiff;
         }
-        else if(curScoreDiff > 0 && curScoreDiff == maxScoreDiff)
+        else if(curDiff == maxDiff)
         {
-            if(isBetter(curRes, res)) res = curRes;
+            if(IsBetter(target, answer))
+                answer = target;
         }
-        curRes[10] -= arrows;
+        target[10] -= arrows;
         return;
     }
     
-    //현재 과녁을 포기함
-    DFS(idx + 1, arrows, curRes, info, maxScoreDiff, res);
-    
-    int needs = info[idx] + 1;
-    if(arrows >= needs)
+    //현재 타겟(k점 과녁)을 가져오는 경우
+    if(arrows > info[curTarget])
     {
-        curRes[idx] = needs;
-        DFS(idx + 1, arrows - needs, curRes, info, maxScoreDiff, res);
-        curRes[idx] = 0;
+        target[curTarget] = info[curTarget] + 1;
+        DFS(curTarget + 1, arrows - target[curTarget], target, info, maxDiff, answer);
+        target[curTarget] = 0;
     }
+    //안가져오는 경우
+    DFS(curTarget + 1, arrows, target, info, maxDiff, answer);
 }
+
 
 vector<int> solution(int n, vector<int> info) {
     vector<int> answer;
     
-    vector<int> res;
-    vector<int> curRes(11, 0);
-    int maxScoreDiff = -0x3f3f3f3f;
-    DFS(0, n, curRes, info, maxScoreDiff, res);
-    if(maxScoreDiff <= 0) answer.push_back(-1);
-    else return res;
+    int maxDiff = -0x3f3f3f3f;
+    vector<int> target(11, 0);
+    DFS(0, n, target, info, maxDiff, answer);
+    if(maxDiff <= 0) answer = {-1};
     return answer;
 }
