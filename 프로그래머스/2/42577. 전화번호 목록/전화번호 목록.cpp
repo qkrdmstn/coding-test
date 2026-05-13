@@ -1,32 +1,23 @@
 #include <string>
 #include <vector>
-#include <unordered_set>
 #include <algorithm>
+#include <unordered_set>
 using namespace std;
 
-bool cmp(string a, string b)
-{
-    return a.length() > b.length();
-}
-
 bool solution(vector<string> phone_book) {
-    bool answer = true;
+    sort(phone_book.begin(), phone_book.end(), greater<string>());
     
-    sort(phone_book.begin(), phone_book.end(), cmp);
     unordered_set<string> s;
-    for(auto &str: phone_book)
+    for(auto& phone: phone_book)
     {
-        string tmp = "";
-        if(s.find(str) != s.end())
+        if(s.find(phone) != s.end()) return false;
+        string num = "";
+        for(int i=0; i<phone.length(); i++)
         {
-            answer = false;
-            return answer;
-        }
-        for(int i=0; i<str.length(); i++)
-        {
-            tmp+=str[i];
-            s.insert(tmp);
+            num += phone[i];
+            s.insert(num);
         }
     }
-    return answer;
+       
+    return true;
 }
