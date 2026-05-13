@@ -5,7 +5,7 @@ using namespace std;
 
 // 각 바위 사이의 거리가 설정된 minDist보다 크거나 같도록 배치할 때, 
 // 몇 개의 바위를 부숴야 하는지 확인합니다.
-long long check(long long minDist, vector<int> rocks)
+int check(long long minDist, vector<int>& rocks)
 {
     long long cur = 0;
     int cnt = 0;
