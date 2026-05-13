@@ -2,99 +2,102 @@
 #include <vector>
 #include <queue>
 #include <algorithm>
+#include <iostream>
 using namespace std;
 
-vector<pair<int, int>> Normalize(vector<pair<int, int>>& shape)
+int dx[4] = {0,1,0,-1};
+int dy[4] = {1,0,-1,0};
+
+void Normalize(vector<pair<int, int>>& shape)
 {
-    int minX = 150, minY = 150;
-    for(auto s: shape)
+    int minX = 51, minY = 51;
+    for(auto& s: shape)
     {
-        minX = min(s.first, minX);
-        minY = min(s.second, minY);
+        minX = min(minX, s.first);
+        minY = min(minY, s.second);
     }
+    
     for(auto& s: shape)
     {
         s.first -= minX;
         s.second -= minY;
     }
     sort(shape.begin(), shape.end());
-    return shape;
 }
 
-vector<pair<int, int>> Rotate(vector<pair<int, int>>& shape)
+void Rotate(vector<pair<int, int>>& shape)
 {
     for(auto& s: shape)
     {
-        int temp = s.first;
+        int tmp = s.first;
         s.first = s.second;
-        s.second = -temp;
+        s.second = -tmp;
     }
     Normalize(shape);
-    return shape;
 }
 
 vector<vector<pair<int, int>>> GetShapes(vector<vector<int>>& board, int target)
 {
-    int dx[4] = {0,1,0,-1};
-    int dy[4] = {1,0,-1,0};
-    vector<vector<pair<int, int>>> result;    
-    vector<vector<bool>> visited(board.size(), vector<bool>(board.size(), false));
-    for(int i=0; i<board.size(); i++)
+    vector<vector<pair<int, int>>> shapes;
+    vector<vector<bool>> vis(board.size(), vector<bool>(board.size(), false));
+    int n = board.size();
+    for(int i=0; i<n; i++)
     {
-        for(int j=0; j<board[i].size(); j++)
+        for(int j=0; j<n; j++)
         {
-            if(board[i][j] != target || visited[i][j]) continue;
+            if(vis[i][j] || board[i][j] != target) continue;
             vector<pair<int, int>> shape;
             queue<pair<int, int>> q;
-            q.push({i,j});
-            visited[i][j] = true;
+            
+            q.push({i, j});
+            vis[i][j] = true;
             while(!q.empty())
             {
-                pair<int, int> cur = q.front();
-                q.pop();
+                auto cur = q.front(); q.pop();
                 shape.push_back(cur);
                 for(int dir=0; dir<4; dir++)
                 {
                     int nx = cur.first + dx[dir];
                     int ny = cur.second + dy[dir];
-                    if(nx < 0 || nx >= board.size() || ny < 0 || ny >= board.size()) 
-                        continue;
-                    if(visited[nx][ny] || board[nx][ny] != target) continue;
-                    visited[nx][ny] = true;
+                    if(nx < 0 || nx >= n || ny < 0 || ny >= n) continue;
+                    if(vis[nx][ny] || board[nx][ny] != target) continue;
                     q.push({nx, ny});
+                    vis[nx][ny] = true;
                 }
             }
-            result.push_back(Normalize(shape));
+            Normalize(shape);
+            shapes.push_back(shape);
         }
     }
-    return result;
+    return shapes;
 }
 
 int solution(vector<vector<int>> game_board, vector<vector<int>> table) {
     int answer = 0;
-    
     vector<vector<pair<int, int>>> holes = GetShapes(game_board, 0);
     vector<vector<pair<int, int>>> blocks = GetShapes(table, 1);
-    vector<bool> usedBlock(blocks.size(), false);
     
-    for(auto hole: holes)
+    cout << holes.size() << " " << blocks.size();
+    vector<bool> usedBlock(blocks.size(), false);
+
+    for(auto& hole: holes)
     {
-        bool found = false;
+        bool isFind = false;
         for(int i=0; i<blocks.size(); i++)
         {
-            if(hole.size() != blocks[i].size() || usedBlock[i]) continue;
-            for(int j=0; j<4; j++)
+            for(int rot=0; rot<4; rot++)
             {
+                if(hole.size() != blocks[i].size() || usedBlock[i]) continue;
                 if(hole == blocks[i])
                 {
-                    answer += blocks[i].size();
+                    isFind = true;
                     usedBlock[i] = true;
-                    found = true;
+                    answer += blocks[i].size();
                     break;
                 }
                 Rotate(blocks[i]);
             }
-            if(found) break;
+            if(isFind) break;
         }
     }
     return answer;
