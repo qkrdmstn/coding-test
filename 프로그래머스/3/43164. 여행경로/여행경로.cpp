@@ -1,32 +1,41 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
+#include <iostream>
 using namespace std;
 
-bool Backtracking(vector<string> &curPath, vector<bool>& used, vector<vector<string>>& tickets)
+void dfs(string cur, vector<vector<string>>& tickets, vector<bool>& usedTicket, vector<string>& res, vector<string>& ans)
 {
-    if(curPath.size() == tickets.size() + 1)
+    if(!ans.empty()) return;
+    if(res.size() == usedTicket.size() + 1)
     {
-        return true;
+        for(auto& r: res)
+            cout << r << " ";
+        cout << "\n";
+        if(ans.empty()) ans = res;
+        return;
     }
+    
     for(int i=0; i<tickets.size(); i++)
     {
-        if(used[i] || tickets[i][0] != curPath.back()) continue;
-        used[i] = true;
-        curPath.push_back(tickets[i][1]);
-        if(Backtracking(curPath, used, tickets)) return true;
-        curPath.pop_back();
-        used[i] = false;
+        if(usedTicket[i] || tickets[i][0] != cur) continue;
+        usedTicket[i] = true;
+        res.push_back(tickets[i][1]);
+        dfs(tickets[i][1], tickets, usedTicket, res, ans);
+        res.pop_back();
+        usedTicket[i] = false;
     }
-    return false;
 }
-
 vector<string> solution(vector<vector<string>> tickets) {
     vector<string> answer;
-    vector<bool> used(tickets.size(), false);
-    answer.push_back("ICN");
     
+    int n = tickets.size();
     sort(tickets.begin(), tickets.end());
-    Backtracking(answer, used, tickets);
+    
+    vector<string> res = {"ICN"};
+    vector<bool> usedTicket(n, false);
+    dfs("ICN", tickets, usedTicket, res, answer);
+    
     return answer;
 }
