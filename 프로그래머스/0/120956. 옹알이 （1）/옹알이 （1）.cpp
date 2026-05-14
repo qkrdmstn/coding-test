@@ -1,49 +1,45 @@
 #include <string>
 #include <vector>
-#include <iostream>
+#include <unordered_set>
 using namespace std;
+
+void dfs(int len, vector<string>& words, vector<bool>& used, vector<string>& word, unordered_set<string>& res)
+{
+    if(word.size() == len)
+    {
+        string s = "";
+        for(auto& w: word)
+            s += w;
+        res.insert(s);
+        return;
+    }
+    
+    for(int i=0; i<words.size(); i++)
+    {
+        if(used[i]) continue;
+        used[i] = true;
+        word.push_back(words[i]);
+        dfs(len, words, used, word, res);
+        used[i] = false;
+        word.pop_back();
+    }
+}
 
 int solution(vector<string> babbling) {
     int answer = 0;
     
-    for(int i=0; i<babbling.size(); i++)
+    vector<string> words = {"aya", "ye", "woo", "ma"};
+    unordered_set<string> res;
+    for(int i=1; i<=4; i++)
     {
-        bool flag = true;
-        for(int j=0; j<babbling[i].length(); j++)
-        {
-            string s = "";
-            if(babbling[i][j] == 'a')
-                s = "aya";
-            else if(babbling[i][j] == 'y')
-                s = "ye";
-            else if(babbling[i][j] == 'w')
-                s = "woo";
-            else if(babbling[i][j] == 'm')
-                s = "ma";
-            
-            if(s == "")
-            {
-                flag = false;
-                break;
-            }
-            for(int k=0; k<s.length(); k++)
-            {
-                cout << i << ' '<< j << ' ' << k << endl;
-                if(babbling[i][j] != s[k] || j >= babbling[i].length())
-                {
-                    flag = false;
-                    break;
-                }
-                j++;
-            }
-            j--;
-            if(!flag) break;
-        }
-        if(flag)
-        {
-            cout << "---------Clear!\n";
-            answer ++;
-        }
+        vector<bool> used(words.size(), false);
+        vector<string> word;
+        dfs(i, words, used, word, res);
+    }
+    
+    for(string& b: babbling)
+    {
+        if(res.find(b) != res.end()) answer++;
     }
     return answer;
 }
