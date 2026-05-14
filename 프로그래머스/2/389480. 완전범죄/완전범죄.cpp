@@ -5,28 +5,29 @@ using namespace std;
 
 int solution(vector<vector<int>> info, int n, int m) {
     int answer = 0;
-    int s = info.size();
     
-    //d[i][j]: 아이템 개수가 i개, 남기는 것이 가능한 B의 흔적 개수가 j개일 때 
-    //a의 최소 흔적
-    vector<vector<int>> d(s+1, vector<int>(m+1, 0));
-    for(int i=1; i<=s; i++)
-        d[i][0] = d[i-1][0] + info[i-1][0]; //누적, a[i-1]은 i번째 아이템을 의미
+    // dp[i][j]: b가 남길 수 있는 흔적 i개, 물건이 j개 있을 때 
+    // A의 흔적 최소 값
+    vector<vector<int>> dp(m, vector<int>(info.size() + 1, 0));
     
-    for(int i=1; i<=s; i++)
+    for(int i=0; i<m; i++)
+        dp[i][0] = 0;
+    
+    for(int i=1; i<=info.size(); i++)
     {
-        int curItemIdx = i-1;
-        for(int j=1; j<=m; j++)
+        for(int j=0; j<m; j++)
         {
-            if(j < info[curItemIdx][1])
-                d[i][j] = d[i-1][j] + info[curItemIdx][0]; //A의 흔적 남기기
-            //이번 아이템을 a가 훔치는 것과 b가 훔치는 것 중 a의 흔적이 더 적게 남는 것을 선택
+            int aInfo = info[i-1][0];
+            int bInfo = info[i-1][1];
+            // B가 물건을 훔칠 수 없는 경우
+            if(j < bInfo) 
+                dp[j][i] = dp[j][i-1] + aInfo; // A가 물건을 훔칩니다.
+            // B가 물건을 훔칠 수 있는 경우, B가 훔치는 것과 A가 훔치는 것 중 더 최소인 것을 선택합니다.
             else
-                d[i][j] = min(d[i-1][j-info[curItemIdx][1]], d[i-1][j] + info[curItemIdx][0]);
+                dp[j][i] = min(dp[j-bInfo][i-1], dp[j][i-1] + aInfo);
         }
     }
-    //answer = 아이템이 s개, B의 흔적이 m-1개까지 가능한 경우
-    answer = d[s][m-1];
+    answer = dp[m-1][info.size()];
     if(answer >= n) answer = -1;
     return answer;
 }
