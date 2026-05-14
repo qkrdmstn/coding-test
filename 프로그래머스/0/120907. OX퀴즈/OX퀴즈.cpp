@@ -6,23 +6,18 @@ using namespace std;
 vector<string> solution(vector<string> quiz) {
     vector<string> answer;
     
-    int x,y,z;
-    char op, eq;
-    
-    for(int i=0; i<quiz.size(); i++)
+    for(const string& q: quiz)
     {
-        stringstream ss(quiz[i]);
-        ss>>x>>op>>y>>eq>>z;
-        if(op == '+')
-        {
-            if(x+y == z) answer.push_back("O");
-            else answer.push_back("X");
-        }
-        else if(op == '-')
-        {
-            if(x-y == z) answer.push_back("O");
-            else answer.push_back("X");
-        }
+        stringstream ss(q);
+        int x, y, z;
+        char op, equal;
+        ss >> x >> op >> y >> equal >> z;
+        // 연산자가 -라면 y의 부호를 변경 (덧셈 연산으로 통일)
+        if(op == '-')
+            y *= -1;
+
+        if(x+y == z) answer.push_back("O");
+        else answer.push_back("X");
     }
     return answer;
 }
