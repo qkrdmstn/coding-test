@@ -2,93 +2,86 @@
 #include <vector>
 #include <unordered_set>
 #include <queue>
-#include <iostream>
 using namespace std;
 
-int dx[4] = {0, 1, 0, -1};
-int dy[4] = {1, 0, -1 ,0};
-
-bool IsBounded(int r, int c)
-{
-    return (r >= 0 && r <= 3 && c >= 0 && c <= 3);
-}
+int dr[4] = {0,1,0,-1};
+int dc[4] = {1,0,-1,0};
 
 int BFS(vector<int>& res, int r, int c, vector<vector<int>> board)
 {
-    cout << "\nres: ";
-    for(auto r: res)
-        cout << r << ' ';
-    cout << "\n";
-    int ans = 0;
+    int result = 0;
     int sr = r, sc = c;
-    for(auto& target: res)
+    
+    for(int& target: res)
     {
+        // target의 쌍을 찾습니다.
         for(int i=0; i<2; i++)
         {
             queue<pair<int, int>> q;
             vector<vector<int>> dist(4, vector<int>(4, -1));
             q.push({sr, sc});
             dist[sr][sc] = 0;
+            
             while(!q.empty())
             {
                 auto cur = q.front(); q.pop();
                 if(board[cur.first][cur.second] == target)
                 {
+                    // 커서 이동 횟수 + Enter 입력
+                    result += dist[cur.first][cur.second] + 1;
                     board[cur.first][cur.second] = 0;
-                    ans += dist[cur.first][cur.second] + 1;
-                    sr = cur.first;
-                    sc = cur.second;
+                    sr = cur.first, sc = cur.second;
                     break;
                 }
+                // 방향키 커서 이동
                 for(int dir=0; dir<4; dir++)
                 {
-                    int nx = cur.first + dx[dir];
-                    int ny = cur.second + dy[dir];
-                    if(!IsBounded(nx, ny)) continue;
-                    if(dist[nx][ny] >= 0) continue;
-                    
-                    q.push({nx, ny});
-                    dist[nx][ny] = dist[cur.first][cur.second] + 1;
+                    int nr = cur.first + dr[dir];
+                    int nc = cur.second + dc[dir];
+                    if(nr < 0 || nr >= 4 || nc < 0 || nc >= 4) continue;
+                    if(dist[nr][nc] >= 0) continue;
+                    q.push({nr, nc});
+                    dist[nr][nc] = dist[cur.first][cur.second] + 1;
                 }
+                
+                // ctrl + 방향키 커서 이동
                 for(int dir=0; dir<4; dir++)
                 {
-                    int cx = cur.first;
-                    int cy = cur.second;
-                    int nx = cx + dx[dir];
-                    int ny = cy + dy[dir];
-                    while(IsBounded(nx, ny))
-                    {
-                        cx = nx;
-                        cy = ny;
-                        if(board[cx][cy] != 0) break;
-                        nx += dx[dir];
-                        ny += dy[dir];
-                    }
-                    if(!IsBounded(cx, cy)) continue;
-                    if(dist[cx][cy] >= 0) continue;
+                    int cr = cur.first, cc = cur.second;
+                    int nr = cr + dr[dir], nc = cc + dc[dir];
                     
-                    q.push({cx, cy});
-                    dist[cx][cy] = dist[cur.first][cur.second] + 1;
+                    while((nr >= 0 && nr < 4 && nc >= 0 && nc < 4))
+                    {
+                        cr = nr, cc = nc;
+                        if(board[cr][cc] != 0) break;
+                        nr += dr[dir];
+                        nc += dc[dir];
+                    }
+                    if(dist[cr][cc] >= 0) continue;
+                    q.push({cr, cc});
+                    dist[cr][cc] = dist[cur.first][cur.second] + 1;
                 }
             }
         }
     }
-    
-    return ans;
+    return result;
 }
 
-void DFS(unordered_set<int>& cards, vector<bool> used, vector<int>& res, int& answer, int r, int c, vector<vector<int>>& board)
+// DFS를 통해 카드를 찾는 모든 순서열을 알아냅니다.
+void DFS(vector<bool>& used, unordered_set<int>& cards, vector<int>& res, int& ans, int r, int c, vector<vector<int>>& board)
 {
     if(res.size() == cards.size())
     {
-        answer = min(answer, BFS(res, r, c, board));
+        // BFS를 통해 지정된 순서열로 카드를 찾습니다.
+        ans = min(ans, BFS(res, r, c, board));
+        return;
     }
     for(auto& card: cards)
     {
         if(used[card]) continue;
         used[card] = true;
         res.push_back(card);
-        DFS(cards, used, res, answer, r, c, board);
+        DFS(used, cards, res, ans, r, c, board);
         res.pop_back();
         used[card] = false;
     }
@@ -96,6 +89,7 @@ void DFS(unordered_set<int>& cards, vector<bool> used, vector<int>& res, int& an
 int solution(vector<vector<int>> board, int r, int c) {
     int answer = 0x3f3f3f3f;
     
+    // 카드 종류를 중복 없이 저장합니다.
     unordered_set<int> cards;
     for(int i=0; i<4; i++)
     {
@@ -107,6 +101,6 @@ int solution(vector<vector<int>> board, int r, int c) {
     
     vector<bool> used(7, false);
     vector<int> res;
-    DFS(cards, used, res, answer, r, c, board);
+    DFS(used, cards, res, answer, r, c, board);
     return answer;
 }
