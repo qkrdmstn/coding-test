@@ -3,72 +3,51 @@
 #include <iostream>
 using namespace std;
 
-
-void Rotate(vector<vector<int>>& key, int m)
+bool Check(int x, int y, vector<vector<int>>& key, vector<vector<int>>& lock, int m, int n)
 {
-    vector<vector<int>> rotKey(m, vector<int>(m));
-    for(int r=0; r<m; r++)
-    {
-        for(int c=0; c<m; c++)
-            rotKey[c][m-r-1] = key[r][c];
-    }
-    key = rotKey;
-}
-
-bool IsCorrect(int sr, int sc, vector<vector<int>>& key, vector<vector<int>>& lock, int m, int n)
-{
-//     cout << "lock: -----------------------------------\n";
-//     for(int i=0; i<n; i++)
-//     {
-//         for(int j=0; j<n; j++)
-//             cout << lock[i][j] << " ";
-//         cout << "\n";
-//     }
-//     cout << "key:" << sr << " " << sc << " -----------------------------------\n";
-//     for(int i=0; i<n; i++)
-//     {
-//         for(int j=0; j<n; j++)
-//         {
-//             if(i >= sr && i < sr + m && j >= sc && j < sc + m)
-//                 cout << key[i-sr][j-sc] << " ";
-
-//         }
-//     }
-//     cout << "ed: -----------------------------------\n\n";
-    
-    
     for(int i=0; i<n; i++)
     {
         for(int j=0; j<n; j++)
         {
-            if(i >= sr && i < sr + m && j >= sc && j < sc + m)
+            int kx = i-x, ky = j-y;
+            if(kx >= 0 && kx < m && ky >= 0 && ky < m)
             {
-                int lockNum = lock[i][j];
-                int keyNum = key[i-sr][j-sc];
-                if(lockNum == 0 && keyNum == 0) return false;
-                else if(lockNum == 1 && keyNum == 1) return false;
+                if(key[kx][ky] == lock[i][j]) return false;
             }
             else if(lock[i][j] == 0) return false;
         }
     }
+    
     return true;
 }
 
-bool solution(vector<vector<int>> key, vector<vector<int>> lock) {
-    bool answer = false;
-    int m = key.size();
-    int n = lock.size();
-    for(int rot = 0; rot < 4; rot++)
+vector<vector<int>> Rotate(vector<vector<int>>& key, int m)
+{
+    vector<vector<int>> rotKey(m, vector<int>(m));
+    for(int i=0; i<m; i++)
     {
-        Rotate(key, m);
-        for(int sr = -(m-1); sr < n; sr++)
+        for(int j=0; j<m; j++)
         {
-            for(int sc = -(m-1); sc < n; sc++)
-            {
-                if(IsCorrect(sr, sc, key, lock, m, n)) return true;
-            }
-        }           
+            rotKey[j][m-1-i] = key[i][j];
+        }
     }
+    return rotKey;
+}
 
-    return answer;
+bool solution(vector<vector<int>> key, vector<vector<int>> lock) {
+
+    int n = lock.size();
+    int m = key.size();
+    for(int x=-(m-1); x<n; x++)
+    {
+        for(int y=-(m-1); y<n; y++)
+        {
+            for(int dir=0; dir<4; dir++)
+            {
+                key = Rotate(key, m);
+                if(Check(x, y, key, lock, m, n)) return true;
+            }
+        }
+    }
+    return false;
 }
