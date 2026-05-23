@@ -2,39 +2,38 @@
 #include <vector>
 
 using namespace std;
-typedef long long ll;
 
 long long solution(vector<int> sequence) {
     long long answer = 0;
     int n = sequence.size();
     
-    vector<int> seq1;
-    vector<int> seq2;
+    // 주어진 수열에 각각의 펄스 수열을 곱합니다.
+    vector<int> arr1(n, 0);
+    vector<int> arr2(n, 0);
     for(int i=0; i<n; i++)
     {
-        int seq = sequence[i];
         if(i%2 == 0)
         {
-            seq1.push_back(seq);
-            seq2.push_back(-seq);
+            arr1[i] = sequence[i];
+            arr2[i] = -sequence[i];
         }
         else
         {
-            seq1.push_back(-seq);
-            seq2.push_back(seq);
+            arr1[i] = -sequence[i];
+            arr2[i] = sequence[i];
         }
     }
     
-    vector<ll> dp1(n);
-    vector<ll> dp2(n);
-    dp1[0] = seq1[0];
-    dp2[0] = seq2[0];
+    vector<long long> dp1(n, 0);
+    vector<long long> dp2(n, 0);
+    dp1[0] = arr1[0];
+    dp2[0] = arr2[0];
     for(int i=1; i<n; i++)
     {
-        dp1[i] = max((ll)seq1[i], dp1[i-1] + seq1[i]);
-        dp2[i] = max((ll)seq2[i], dp2[i-1] + seq2[i]);
+        dp1[i] = max(dp1[i-1] + arr1[i], (long long)arr1[i]);
+        dp2[i] = max(dp2[i-1] + arr2[i], (long long)arr2[i]);
     }
     for(int i=0; i<n; i++)
-        answer = max(answer, max(dp1[i], dp2[i]));
+        answer = max(max(dp1[i], dp2[i]), answer);
     return answer;
 }
