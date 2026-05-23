@@ -1,29 +1,37 @@
 #include <string>
 #include <vector>
-#include <set>
+#include <iostream>
 using namespace std;
-
-int solution(vector<int> stones, int k) {
-    int answer = 0x3f3f3f3f;
-    
-    multiset<int> s;
-    int left = 0;
-    for(int right=0; right<(int)stones.size(); right++)
+bool CanCross(int mid, vector<int>& stones, int k)
+{
+    int cnt = 0;
+    for(auto& stone: stones)
     {
-        s.insert(stones[right]);
-
-
-        if(s.size() > k)
+        if(stone - mid < 0)
         {
-            auto it = s.find(stones[left]);
-            if(it != s.end()) s.erase(it);
-            left++;
+            cnt++;
+            if(cnt >= k) return false;
         }
-        if(s.size() == k)
+        else cnt = 0;
+    }
+    return true;
+}
+int solution(vector<int> stones, int k) {
+    int answer = 0;
+    
+    int st = 1;
+    int ed = 200'000'000;
+    
+    while(st<=ed)
+    {
+        int mid = st + (ed - st) / 2;
+        if(CanCross(mid, stones, k))
         {
-            int rangeMax = *s.rbegin();
-            answer = min(answer, rangeMax);
+            st = mid + 1;
+            answer = mid;
         }
+        else
+            ed = mid - 1;
     }
     return answer;
 }
