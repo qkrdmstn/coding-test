@@ -1,6 +1,8 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <iostream>
+
 using namespace std;
 
 bool cmp(vector<int>& a, vector<int>& b)
@@ -11,26 +13,38 @@ bool cmp(vector<int>& a, vector<int>& b)
 }
 
 int solution(vector<vector<int>> scores) {
-    pair<int, int> targetScore = {scores[0][0], scores[0][1]};
-    int targetSum = scores[0][0] + scores[0][1];
+    // A: 근무 태도 점수, B: 동료 평가 점수
+    int wanhoA = scores[0][0];
+    int wanhoB = scores[0][1];
     
+    // A 내림차순, B 오름차순으로 정렬합니다.
     sort(scores.begin(), scores.end(), cmp);
     
-    vector<int> validSum;
-    int maxScore = 0;
-    for(auto& score: scores)
+    // 정렬에 의해 자신보다 앞에 있는 점수는 A가 무조건 높습니다.
+    // 따라서, 앞에 있는 점수들 중 B의 값이 나보다 높다면 둘 다 낮은 것이 됩니다.
+    // 앞에서부터 B의 최대값을 추적하여, 다른 사원보다 두 점수가 모두 낮은지 판단합니다.
+    vector<int> sums;
+    int maxB = scores[0][1];
+    for(const auto& score : scores)
     {
-        if(score[1] < maxScore)
+        // 현재 사원의 점수는 다른 사원보다 A, B 모두 낮음
+        if(score[1] < maxB)
         {
-            if(score[0] == targetScore.first && score[1] == targetScore.second) return -1;
+            // 완호의 점수와 같다면 -1 반환
+            if(score[0] == wanhoA && score[1] == wanhoB)
+                return -1;
             continue;
         }
-        
-        maxScore = max(score[1], maxScore);
-        validSum.push_back(score[0] + score[1]);
+        // 통과한 점수들은 합을 계산하여 저장합니다.
+        sums.push_back(score[0] + score[1]);
+        maxB = max(score[1], maxB);
     }
     
-    sort(validSum.begin(), validSum.end(), greater<int>());
-    int answer = lower_bound(validSum.begin(), validSum.end(), targetSum, greater<int>()) - validSum.begin();
-    return answer + 1;
+    sort(sums.begin(), sums.end(), greater<int>());
+    for(int i=0; i<sums.size(); i++)
+    {
+        if(wanhoA + wanhoB == sums[i]) return i + 1;
+    }
+    
+    return 0;
 }
