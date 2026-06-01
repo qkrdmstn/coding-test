@@ -1,41 +1,34 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <unordered_map>
-#include <iostream>
 using namespace std;
 
-void dfs(string cur, vector<vector<string>>& tickets, vector<bool>& usedTicket, vector<string>& res, vector<string>& ans)
+void DFS(string cur, vector<bool>& used, vector<vector<string>>& tickets, vector<string>& res, vector<vector<string>>& answer)
 {
-    if(!ans.empty()) return;
-    if(res.size() == usedTicket.size() + 1)
+    if(res.size() == tickets.size() + 1)
     {
-        for(auto& r: res)
-            cout << r << " ";
-        cout << "\n";
-        if(ans.empty()) ans = res;
+        answer.push_back(res);
         return;
     }
     
     for(int i=0; i<tickets.size(); i++)
     {
-        if(usedTicket[i] || tickets[i][0] != cur) continue;
-        usedTicket[i] = true;
+        if(used[i] || tickets[i][0] != cur) continue;
         res.push_back(tickets[i][1]);
-        dfs(tickets[i][1], tickets, usedTicket, res, ans);
+        used[i] = true;
+        DFS(tickets[i][1], used, tickets, res, answer);
+        used[i] = false;
         res.pop_back();
-        usedTicket[i] = false;
     }
 }
 vector<string> solution(vector<vector<string>> tickets) {
-    vector<string> answer;
+    vector<vector<string>> answer;
     
-    int n = tickets.size();
     sort(tickets.begin(), tickets.end());
+    vector<bool> used(tickets.size(), false);
+    vector<string> res;
+    res.push_back("ICN");
+    DFS(res[0], used, tickets, res, answer);
     
-    vector<string> res = {"ICN"};
-    vector<bool> usedTicket(n, false);
-    dfs("ICN", tickets, usedTicket, res, answer);
-    
-    return answer;
+    return answer[0];
 }
