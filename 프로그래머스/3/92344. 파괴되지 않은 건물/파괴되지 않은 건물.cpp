@@ -1,46 +1,49 @@
 #include <string>
 #include <vector>
+#include <tuple>
 
 using namespace std;
 
-// 누적 합 기법을 통해 모든 연산을 줄일 수 있다.
 int solution(vector<vector<int>> board, vector<vector<int>> skill) {
     int answer = 0;
     
     int n = board.size();
     int m = board[0].size();
-    vector<vector<int>> diff(n+1, vector<int>(m+1, 0));
     
+    // 2차원 누적합 기법을 통해 공격/회복을 표현합니다.
+    vector<vector<int>> arr(n+1, vector<int>(m+1, 0));
     for(const auto& s: skill)
     {
+        int type = s[0];
         int r1 = s[1], c1 = s[2];
         int r2 = s[3], c2 = s[4];
-        int degree = s[5];
-        if(s[0] == 1) degree *= -1;
+        int degree = ((type == 1) ? -s[5] : s[5]);
         
-        diff[r1][c1] += degree;
-        diff[r2+1][c1] -= degree;
-        diff[r1][c2+1] -= degree;
-        diff[r2+1][c2+1] += degree;
+        arr[r1][c1] += degree;
+        arr[r1][c2+1] -= degree;
+        arr[r2+1][c1] -= degree;
+        arr[r2+1][c2+1] += degree;
     }
     
-    for(int i=0; i<n; i++)
+    // 누적 합 계산 (가로/세로 방향 누적)
+    for(int r=0; r<n; r++)
     {
-        for(int j=0; j<m; j++)
-            diff[i][j+1] += diff[i][j];
+        for(int c=0; c<m; c++)
+            arr[r+1][c] += arr[r][c];
+    }
+    for(int c=0; c<m; c++)
+    {
+        for(int r=0; r<n; r++)
+            arr[r][c+1] += arr[r][c];
     }
     
-    for(int j=0; j<m; j++)
+    // 초기 값과 누적 합 값을 합해 파괴되지 않은 건물 개수를 구합니다.
+    for(int r=0; r<n; r++)
     {
-        for(int i=0; i<n; i++)
-            diff[i+1][j] += diff[i][j];
-    }
-    
-    for(int i=0; i<n; i++)
-    {
-        for(int j=0; j<m; j++)
+        for(int c=0; c<m; c++)
         {
-            if(board[i][j] + diff[i][j] > 0) answer++;
+            if(board[r][c] + arr[r][c] > 0) 
+                answer++;
         }
     }
     return answer;
