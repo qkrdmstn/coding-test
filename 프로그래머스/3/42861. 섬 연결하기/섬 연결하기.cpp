@@ -3,10 +3,16 @@
 #include <algorithm>
 using namespace std;
 
-int find(int x, vector<int>& p)
+// 비용 오름차순으로 costs를 정렬
+bool cmp(vector<int>& a, vector<int>& b)
 {
-    if(p[x] == -1) return x;
-    return p[x] = find(p[x], p);
+    return a[2] < b[2];
+}
+
+int find(int u, vector<int>& p)
+{
+    if(p[u] < 0) return u;
+    return p[u] = find(p[u], p);
 }
 
 bool uni(int u, int v, vector<int>& p)
@@ -18,27 +24,26 @@ bool uni(int u, int v, vector<int>& p)
     return true;
 }
 
-bool cmp(vector<int>& a, vector<int>& b)
-{
-    return a[2] < b[2];
-}
 int solution(int n, vector<vector<int>> costs) {
     int answer = 0;
-    
     vector<int> p(n, -1);
+    
+    // costs를 비용 오름차순으로 정렬합니다.
     sort(costs.begin(), costs.end(), cmp);
     
+    // 크루스칼 알고리즘을 활용해 최소신장트리를 구성합니다.
     int cnt = 0;
-    for(int i=0; i<costs.size(); i++)
+    for(const auto& cost: costs)
     {
-        int a = costs[i][0];
-        int b = costs[i][1];
-        int cost = costs[i][2];
-        if(uni(a, b, p)) 
+        int u = cost[0], v = cost[1];
+        int c = cost[2];
+        if(uni(u, v, p))
         {
             cnt++;
-            answer += cost;
+            answer += c;
         }
+        
+        // 간선이 n-1개가 지정되면 크루스칼 알고리즘을 종료합니다.
         if(cnt == n-1) break;
     }
     return answer;
