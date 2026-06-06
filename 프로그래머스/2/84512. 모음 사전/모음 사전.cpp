@@ -1,28 +1,30 @@
 #include <string>
 #include <vector>
+#include <iostream>
+
 using namespace std;
 
-const string WORDS = "AEIOU";
-bool dfs(string cur, const string& target, int& cnt, int& answer)
+string s = "AEIOU";
+bool DFS(string cur, int& cnt, string& target, int& ans)
 {
     if(cur == target)
     {
-        answer = cnt;
+        ans = cnt;
         return true;
     }
+    
     if(cur.length() == 5) return false;
-
-    for(int i=0; i<WORDS.length(); i++)
+    for(const auto& c: s)
     {
         cnt++;
-        if(dfs(cur + WORDS[i], target, cnt, answer)) return true;
+        if(DFS(cur + c, cnt, target, ans)) return true;
     }
     return false;
 }
 
 int solution(string word) {
-    int answer = 0;
-    int count = 0;
-    dfs("", word, count, answer);
+    int answer = -1;
+    int cnt = 0;
+    DFS("", cnt, word, answer);
     return answer;
 }
