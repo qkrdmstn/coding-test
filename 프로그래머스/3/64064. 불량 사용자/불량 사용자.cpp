@@ -1,50 +1,52 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <iostream>
 using namespace std;
 
-bool IsMatch(string& user, string banned)
+bool matched(string user, string banned)
 {
     if(user.length() != banned.length()) return false;
     
-    int len = banned.length();
-    for(int i=0; i<len; i++)
+    for(int i=0; i<user.length(); i++)
     {
         if(banned[i] == '*') continue;
-        if(banned[i] != user[i]) return false;
+        if(user[i] != banned[i]) return false;
     }
     return true;
-}
+} 
 
-// 각 depth당 banned_id에 매치되는 user_Id를 하나씩 선택해 나아간다.
-void DFS(int depth, vector<bool>& used, vector<string>& user_id, vector<string>& banned_id, set<int>& res, set<set<int>>& ans)
+void DFS(vector<string>& user_id, vector<string>& banned_id, vector<bool>& used, set<int>& candidate, set<set<int>>& result)
 {
-    // 중복 제거를 위해 set 자료구조에 삽입
-    if(depth == banned_id.size())
+    if(candidate.size() == banned_id.size())
     {
-        ans.insert(res);
+
+        result.insert(candidate);
+
         return;
     }
     
     for(int i=0; i<user_id.size(); i++)
     {
-        // 이전 depth 에서 이미 사용된 user_id라면 건너뛴다,
         if(used[i]) continue;
-        if(!IsMatch(user_id[i], banned_id[depth])) continue;
+        if(!matched(user_id[i], banned_id[candidate.size()])) continue;
+        //cout << user_id[i] << " " << banned_id[candidate.size()] <<"\n";
+
         used[i] = true;
-        res.insert(i);
-        DFS(depth + 1, used, user_id, banned_id, res, ans);
-        res.erase(i);
+        candidate.insert(i);
+        DFS(user_id, banned_id, used, candidate, result);
         used[i] = false;
+        candidate.erase(i);
     }
 }
 
 int solution(vector<string> user_id, vector<string> banned_id) {
     int answer = 0;
     
-    set<set<int>> ans;
     vector<bool> used(user_id.size(), false);
-    set<int> res;
-    DFS(0, used, user_id, banned_id, res, ans);
-    return ans.size();
+    set<int> candidate;
+    set<set<int>> result;
+    
+    DFS(user_id, banned_id, used, candidate, result);
+    return result.size();
 }
