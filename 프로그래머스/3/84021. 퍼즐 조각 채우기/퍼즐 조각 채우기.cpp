@@ -1,22 +1,22 @@
 #include <string>
 #include <vector>
-#include <queue>
 #include <algorithm>
+#include <queue>
 using namespace std;
 
-int dx[4] = {0,1,0,-1};
-int dy[4] = {1,0,-1,0};
+
+int dx[4] = {0, 1, 0, -1};
+int dy[4] = {1, 0, -1, 0};
 
 vector<pair<int, int>> Normalize(vector<pair<int, int>>& block)
 {
-    int minX = block[0].first, minY = block[0].second;
-    for(const auto& pos: block)
+    int minX = 51, minY = 51;
+    for(const auto& pos : block)
     {
-        minX = min(pos.first, minX);
-        minY = min(pos.second, minY);
+        minX = min(minX, pos.first);
+        minY = min(minY, pos.second);
     }
-    
-    for(auto& pos: block)
+    for(auto& pos : block)
     {
         pos.first -= minX;
         pos.second -= minY;
@@ -39,22 +39,24 @@ vector<pair<int, int>> Rotate(vector<pair<int, int>>& block)
 vector<vector<pair<int, int>>> GetBlocks(vector<vector<int>>& board, int target)
 {
     int n = board.size();
-    vector<vector<pair<int, int>>> blocks;
-    queue<pair<int, int>> q;
-    vector<vector<bool>> vis(n, vector<bool>(n, false));
     
+    vector<vector<pair<int, int>>> blocks;
+    vector<vector<bool>> vis(n, vector<bool>(n, false));
+    queue<pair<int, int>> q;
     for(int i=0; i<n; i++)
     {
         for(int j=0; j<n; j++)
         {
             if(vis[i][j] || board[i][j] != target) continue;
+            
+            vector<pair<int, int>> block;
             q.push({i, j});
             vis[i][j] = true;
-            vector<pair<int, int>> block;
             while(!q.empty())
             {
-                auto cur = q.front(); q.pop();
+                auto cur = q.front();
                 block.push_back(cur);
+                q.pop();
                 for(int dir=0; dir<4; dir++)
                 {
                     int nx = cur.first + dx[dir];
@@ -73,32 +75,34 @@ vector<vector<pair<int, int>>> GetBlocks(vector<vector<int>>& board, int target)
 
 int solution(vector<vector<int>> game_board, vector<vector<int>> table) {
     int answer = 0;
-    vector<vector<pair<int, int>>> cells = GetBlocks(game_board, 0);
-    vector<vector<pair<int, int>>> blocks = GetBlocks(table, 1);
-    vector<bool> usedBlock(blocks.size(), false);
     
-    for(const auto& hole: cells)
+    vector<vector<pair<int, int>>> blanks = GetBlocks(game_board, 0);
+    vector<vector<pair<int, int>>> blocks = GetBlocks(table, 1);
+    
+    
+    vector<bool> usedBlock(blocks.size(), false);
+    for(const auto& blank: blanks)
     {
         bool isFind = false;
         for(int i=0; i<blocks.size(); i++)
         {
-            if(usedBlock[i] || hole.size() != blocks[i].size()) continue;
-            vector<pair<int, int>> curBlock = blocks[i];
+            if(usedBlock[i]) continue;
+            if(blank.size() != blocks[i].size()) continue;
             
             for(int rot=0; rot<4; rot++)
             {
-                if(hole == curBlock)
+                if(blank == blocks[i])
                 {
                     usedBlock[i] = true;
                     isFind = true;
                     answer += blocks[i].size();
                     break;
                 }
-                
-                curBlock = Rotate(curBlock);
+                blocks[i] = Rotate(blocks[i]);
             }
             if(isFind) break;
         }
     }
+    
     return answer;
 }
