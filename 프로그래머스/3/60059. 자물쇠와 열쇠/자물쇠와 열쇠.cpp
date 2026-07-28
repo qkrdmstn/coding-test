@@ -1,53 +1,60 @@
 #include <string>
 #include <vector>
 #include <iostream>
+
 using namespace std;
 
-bool Check(int x, int y, vector<vector<int>>& key, vector<vector<int>>& lock, int m, int n)
+bool check(vector<vector<int>>& key, vector<vector<int>>& lock, int x, int y)
 {
+    int m = key.size();
+    int n = lock.size();
+    
     for(int i=0; i<n; i++)
     {
         for(int j=0; j<n; j++)
         {
-            int kx = i-x, ky = j-y;
-            if(kx >= 0 && kx < m && ky >= 0 && ky < m)
+            if(i >= x && i < x + m && j >= y && j < y + m)
             {
-                if(key[kx][ky] == lock[i][j]) return false;
+                if(lock[i][j] == key[i-x][j-y] ) 
+                    return false;
             }
-            else if(lock[i][j] == 0) return false;
+            else
+            {
+                if(lock[i][j] == 0)
+                    return false;
+            }
         }
     }
-    
     return true;
 }
 
-vector<vector<int>> Rotate(vector<vector<int>>& key, int m)
+vector<vector<int>> Rotate(vector<vector<int>>& key)
 {
-    vector<vector<int>> rotKey(m, vector<int>(m));
-    for(int i=0; i<m; i++)
+    int m = key.size();
+    vector<vector<int>> newKey(m, vector<int>(m));
+    for(int i=0; i<key.size(); i++)
     {
-        for(int j=0; j<m; j++)
-        {
-            rotKey[j][m-1-i] = key[i][j];
-        }
+        for(int j=0; j<key.size(); j++)
+            newKey[m-1-j][i] = key[i][j];
     }
-    return rotKey;
+    return newKey;
 }
 
 bool solution(vector<vector<int>> key, vector<vector<int>> lock) {
-
+    bool answer = true;
+    
     int n = lock.size();
     int m = key.size();
-    for(int x=-(m-1); x<n; x++)
+    for(int rot=0; rot<4; rot++)
     {
-        for(int y=-(m-1); y<n; y++)
+        for(int i=-m+1; i<n; i++)
         {
-            for(int dir=0; dir<4; dir++)
+            for(int j=-m+1; j<n; j++)
             {
-                key = Rotate(key, m);
-                if(Check(x, y, key, lock, m, n)) return true;
+                if(check(key, lock, i, j)) return true;
             }
         }
+        key = Rotate(key);
     }
     return false;
 }
