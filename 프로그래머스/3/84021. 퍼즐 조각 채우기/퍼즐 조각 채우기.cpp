@@ -1,25 +1,26 @@
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <queue>
+#include <algorithm>
+
 using namespace std;
 
-
-int dx[4] = {0, 1, 0, -1};
-int dy[4] = {1, 0, -1, 0};
+int dx[4] = {0,1,0,-1};
+int dy[4] = {1,0,-1,0};
 
 vector<pair<int, int>> Normalize(vector<pair<int, int>>& block)
 {
     int minX = 51, minY = 51;
-    for(const auto& pos : block)
+    for(const auto& b: block)
     {
-        minX = min(minX, pos.first);
-        minY = min(minY, pos.second);
+        minX = min(b.first, minX);
+        minY = min(b.second, minY);
     }
-    for(auto& pos : block)
+    
+    for(auto& b: block)
     {
-        pos.first -= minX;
-        pos.second -= minY;
+        b.first -= minX;
+        b.second -= minY;
     }
     sort(block.begin(), block.end());
     return block;
@@ -27,82 +28,85 @@ vector<pair<int, int>> Normalize(vector<pair<int, int>>& block)
 
 vector<pair<int, int>> Rotate(vector<pair<int, int>>& block)
 {
-    for(auto& pos: block)
+    for(auto& b: block)
     {
-        int tmp = pos.first;
-        pos.first = pos.second;
-        pos.second = -tmp;
+        int tmp = b.first;
+        b.first = b.second;
+        b.second = -tmp;
     }
     return Normalize(block);
 }
 
-vector<vector<pair<int, int>>> GetBlocks(vector<vector<int>>& board, int target)
+vector<vector<pair<int, int>>> GetBlocks(vector<vector<int>> board, int target)
 {
     int n = board.size();
     
     vector<vector<pair<int, int>>> blocks;
     vector<vector<bool>> vis(n, vector<bool>(n, false));
-    queue<pair<int, int>> q;
     for(int i=0; i<n; i++)
     {
         for(int j=0; j<n; j++)
         {
-            if(vis[i][j] || board[i][j] != target) continue;
+            if(board[i][j] != target || vis[i][j]) continue;
             
+            queue<pair<int, int>> q;
             vector<pair<int, int>> block;
+            
             q.push({i, j});
             vis[i][j] = true;
             while(!q.empty())
             {
                 auto cur = q.front();
-                block.push_back(cur);
                 q.pop();
+                block.push_back(cur);
+                
                 for(int dir=0; dir<4; dir++)
                 {
                     int nx = cur.first + dx[dir];
                     int ny = cur.second + dy[dir];
                     if(nx < 0 || nx >= n || ny < 0 || ny >= n) continue;
-                    if(vis[nx][ny] || board[nx][ny] != target) continue;
-                    q.push({nx, ny});
+                    if(board[nx][ny] != target || vis[nx][ny]) continue;
                     vis[nx][ny] = true;
+                    q.push({nx, ny});
                 }
             }
+            
             blocks.push_back(Normalize(block));
         }
     }
+    
     return blocks;
 }
 
 int solution(vector<vector<int>> game_board, vector<vector<int>> table) {
     int answer = 0;
     
-    vector<vector<pair<int, int>>> blanks = GetBlocks(game_board, 0);
+    vector<vector<pair<int, int>>> holes = GetBlocks(game_board, 0);
     vector<vector<pair<int, int>>> blocks = GetBlocks(table, 1);
     
-    
     vector<bool> usedBlock(blocks.size(), false);
-    for(const auto& blank: blanks)
+    
+    for(const auto& h: holes)
     {
         bool isFind = false;
         for(int i=0; i<blocks.size(); i++)
         {
-            if(usedBlock[i]) continue;
-            if(blank.size() != blocks[i].size()) continue;
+            vector<pair<int, int>> curBlock = blocks[i];
+            if(usedBlock[i] || h.size() != curBlock.size()) continue;
             
-            for(int rot=0; rot<4; rot++)
+            for(int r=0; r<4; r++)
             {
-                if(blank == blocks[i])
+                if(curBlock == h)
                 {
-                    usedBlock[i] = true;
                     isFind = true;
-                    answer += blocks[i].size();
+                    answer += curBlock.size();
+                    usedBlock[i] = true;
                     break;
                 }
-                blocks[i] = Rotate(blocks[i]);
+                curBlock = Rotate(curBlock);
             }
             if(isFind) break;
         }
     }
-    
     return answer;
 }
