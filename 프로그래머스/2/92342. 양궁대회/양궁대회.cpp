@@ -1,75 +1,67 @@
 #include <string>
-#include <iostream>
 #include <vector>
 
 using namespace std;
-
-int ClacScore(vector<int>& res, vector<int>& info)
+int CalcScoreDiff(const vector<int>& res, const vector<int>& info)
 {
-    // 라이언, 어피치 점수
-    int score1 = 0, score2 = 0;
+    // A: 어피치, B: 라이언
+    int scoreA = 0, scoreB = 0;
     for(int i=0; i<11; i++)
     {
-        if(res[i] == info[i]) continue;
-        else if(res[i] > info[i]) score1 += 10 - i;
-        else score2 += 10 - i;
+        int score = 10-i;
+        if(info[i] == 0 && res[i] == 0) continue;
+        if(info[i] >= res[i]) scoreA += score;
+        else scoreB += score;
     }
-    return score1 - score2;
+    return scoreB-scoreA;
 }
 
-bool IsFirst(vector<int>& res, vector<int>& ans)
+bool IsFirst(const vector<int>& curRes, const vector<int>& result)
 {
     for(int i=10; i>=0; i--)
     {
-        cout << "i: " << i << " " << res[i] << " " << ans[i] << "\n";
-        if(res[i] > ans[i]) {cout << "true\n"; return true;}
-        if(res[i] < ans[i]) {cout << "false\n"; return false;}
+        if(curRes[i] > result[i]) return true;
+        if(curRes[i] < result[i]) return false;
     }
     return false;
 }
 
-void DFS(int idx, int restArrow, vector<int>& info, vector<int>& res, int& maxScore, vector<int>& ans)
+void DFS(int depth, int curArrow, vector<int>& curRes, vector<int>& result, int& maxDiff, const vector<int>& info)
 {
-    if(res.size() == info.size())
+    if(depth == 11)
     {
-        res[10] += restArrow;
-        int curScore = ClacScore(res, info);
-        if(curScore > maxScore)
+        curRes[10] += curArrow;
+        int diff = CalcScoreDiff(curRes, info);
+        if(diff > maxDiff)
         {
-            maxScore = curScore;
-            ans = res;
+            maxDiff = diff;
+            result = curRes;
         }
-        else if(curScore == maxScore)
+        else if(diff == maxDiff)
         {
-            if(IsFirst(res, ans)) ans = res;
+            if(IsFirst(curRes, result)) result = curRes;
         }
-    
-        res[10] -= restArrow;
+        curRes[10] -= curArrow;
         return;
     }
     
-    // 현재 점수를 가져오는 경우
-    if(restArrow > info[idx])
+    if(curArrow > info[depth])
     {
-        int useArrow = info[idx] + 1;
-        res.push_back(useArrow);
-        DFS(idx + 1, restArrow - useArrow, info, res, maxScore, ans);
-        res.pop_back();
+        int reqArrow = info[depth] + 1;
+        curRes[depth] += reqArrow;
+        DFS(depth+1, curArrow - reqArrow, curRes, result, maxDiff, info);
+        curRes[depth] -= reqArrow;
     }
     
-    // 현재 점수를 포기하는 경우
-    res.push_back(0);
-    DFS(idx+1, restArrow, info, res, maxScore, ans);
-    res.pop_back();
+    DFS(depth+1, curArrow, curRes, result, maxDiff, info);
 }
 
-
 vector<int> solution(int n, vector<int> info) {
-    int maxScore = -0x3f3f3f3f;
-    vector<int> res;
     vector<int> answer(11, 0);
-    DFS(0, n, info, res, maxScore, answer);
+    vector<int> curRes(11, 0);
+    int maxDiff = -0x3f3f3f3f;
+    DFS(0, n, curRes, answer, maxDiff, info);
     
-    if(maxScore <= 0) answer = {-1};
+    if(maxDiff <= 0) return {-1};
     return answer;
 }
