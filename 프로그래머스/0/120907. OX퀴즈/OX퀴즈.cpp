@@ -1,23 +1,31 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <iostream>
 using namespace std;
 
 vector<string> solution(vector<string> quiz) {
     vector<string> answer;
     
-    for(const string& q: quiz)
+    for(const auto& q: quiz)
     {
         stringstream ss(q);
-        int x, y, z;
+        int a, b, res;
         char op, equal;
-        ss >> x >> op >> y >> equal >> z;
-        // 연산자가 -라면 y의 부호를 변경 (덧셈 연산으로 통일)
-        if(op == '-')
-            y *= -1;
-
-        if(x+y == z) answer.push_back("O");
-        else answer.push_back("X");
+        ss >> a >> op >> b >> equal >> res;
+        
+        if(op == '+')
+        {
+            if(a+b == res) answer.push_back("O");
+            else answer.push_back("X");
+        }
+        else
+        {
+            if(a-b == res) answer.push_back("O");
+            else answer.push_back("X");
+        }
     }
+    
+    
     return answer;
 }
