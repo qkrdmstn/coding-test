@@ -1,34 +1,35 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-
 using namespace std;
 
-bool cmp(const vector<int>& r1, const vector<int>& r2)
+bool cmp(const vector<int>& a, const vector<int>& b)
 {
-    return r1[1] < r2[1];
+    return a[1] < b[1];    
 }
 
 int solution(vector<vector<int>> routes) {
     int answer = 0;
-    int num = routes.size();
-    
-    // 진출 지점 기준 오름차순으로 정렬합니다.
+
+    // 진출 지점 오름차순으로 정렬
     sort(routes.begin(), routes.end(), cmp);
     
-    // 설치된 마지막 카메라의 위치를 저장합니다.
-    int lastCameraPos = routes[0][1];
-    answer = 1;
+
+    // 첫 번째 차가 나가는 지점에 단속카메라를 하나 설치합니다.
+    answer++;
     
-    for(const auto r: routes)
+    int n = routes.size();
+    int lastCameraPos = routes[0][1];
+    for(int i=1; i<n; i++)
     {
-        // 진출지점 기준으로 정렬돼있기 때문에, 진입 지점이 카메라보다 앞선다면 
-        // 카메라를 만납니다.
-        if(r[0] <= lastCameraPos) continue;
+        // 진출지점 오름차순이기 때문에,
+        // 마지막으로 카메라가 설치된 위치보다 앞에서 들어왔으면 해당 카메라와 만납니다.
+        if(routes[i][0] <= lastCameraPos) continue;
         
-        // 만나지 못하면, 진출 지점에 카메라를 설치합니다.
-        lastCameraPos = r[1];
+        // 마지막 카메라보다 뒤에 진입한 경우, 해당 차의 진출지점에 카메라를 설치합니다.
         answer++;
+        lastCameraPos = routes[i][1];
     }
+    
     return answer;
 }
